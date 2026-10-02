@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react-native';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { ScreenHeading } from '@/components/layout/ScreenHeading';
@@ -9,7 +9,10 @@ import { ProgressBar } from '@/components/stats/ProgressBar';
 import { ErrorState, LoadingState } from '@/components/ui/states';
 import { StatusChip } from '@/components/ui/StatusChip';
 import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { ArchivedHeading } from '@/features/lists/ArchivedHeading';
+import { RestoreButton } from '@/features/lists/RestoreButton';
 import { useListsScreen } from '@/features/lists/useListsScreen';
+import { MoreButton } from '@/features/manage/MoreButton';
 import { useGutter } from '@/hooks/useResponsive';
 import { readError } from '@/lib/utils';
 import { COLORS } from '@/theme/colors';
@@ -23,6 +26,9 @@ export function ListsScreen() {
   const { t } = useLang();
   const gutter = useGutter();
   const screen = useListsScreen();
+  const [showArchived, setShowArchived] = useState(false);
+  // A household that archived every list still needs the way back to them.
+  const hasAny = screen.rows.length > 0 || screen.archived.length > 0;
 
   const rows = useMemo<CardRow[]>(() => {
     const cards: CardRow[] = screen.rows.map((row) => ({
@@ -31,13 +37,18 @@ export function ListsScreen() {
       props: {
         title: row.name,
         onPress: row.onPress,
-        trailing: row.chip ? (
-          <StatusChip label={row.chip} />
-        ) : row.whenText ? (
-          <Text className="text-xs text-muted-foreground" numberOfLines={1}>
-            {row.whenText}
-          </Text>
-        ) : undefined,
+        trailing: (
+          <View className="flex-row items-center gap-2.5">
+            {row.chip ? (
+              <StatusChip label={row.chip} />
+            ) : row.whenText ? (
+              <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+                {row.whenText}
+              </Text>
+            ) : null}
+            <MoreButton label={t.moreFor(row.name)} onPress={row.edit} />
+          </View>
+        ),
         footer: (
           <View className="gap-2.5">
             <ProgressBar percent={row.percent} />
@@ -48,8 +59,7 @@ export function ListsScreen() {
         ),
       },
     }));
-    if (screen.rows.length === 0) return cards;
-    if (screen.rows.length === 0) return cards;
+    if (!hasAny) return cards;
     cards.push({
       type: 'node',
       key: 'new',
@@ -67,8 +77,29 @@ export function ListsScreen() {
         </View>
       ),
     });
+    if (screen.archived.length > 0) {
+      cards.push({
+        type: 'heading',
+        key: 'h:archived',
+        node: <ArchivedHeading count={screen.archived.length} open={showArchived} onPress={() => setShowArchived((open) => !open)} />,
+      });
+      if (showArchived) {
+        for (const row of screen.archived) {
+          cards.push({
+            type: 'card',
+            key: `a:${row.id}`,
+            props: {
+              title: row.name,
+              subtitle: row.meta,
+              onPress: row.edit,
+              trailing: <RestoreButton name={row.name} onPress={row.restore} />,
+            },
+          });
+        }
+      }
+    }
     return cards;
-  }, [screen.rows, screen.newList, t, gutter]);
+  }, [screen.rows, screen.archived, screen.newList, showArchived, hasAny, t, gutter]);
 
   if (screen.error) return <ErrorState message={readError(screen.error)} onRetry={screen.refetch} />;
 
@@ -84,7 +115,7 @@ export function ListsScreen() {
           rows={rows}
           onRefresh={screen.refetch}
           empty={
-            screen.rows.length === 0
+            !hasAny
               ? { title: t.noListsTitle, body: t.noListsBody, action: { label: t.newList, onPress: screen.newList } }
               : undefined
           }

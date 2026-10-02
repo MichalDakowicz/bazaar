@@ -1,6 +1,6 @@
 import { usePathname, useRouter } from 'expo-router';
-import { Plus, Settings } from 'lucide-react-native';
-import { type ReactNode } from 'react';
+import { Archive, Plus, Settings } from 'lucide-react-native';
+import { type ReactNode, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { LiveCue } from '@/components/layout/LiveCue';
@@ -12,6 +12,7 @@ import { useLang } from '@/features/bazaar/useBazaarSettings';
 import { useLiveTrips } from '@/features/bazaar/useLiveTrips';
 import { useWorkspace } from '@/features/bazaar/useWorkspace';
 import { Avatar } from '@/features/friends/Avatar';
+import { MoreButton } from '@/features/manage/MoreButton';
 import { useProfile } from '@/hooks/useProfile';
 import { SIDEBAR_WIDTH, useHover, webTransition } from '@/hooks/useResponsive';
 import { CATEGORY_COUNTS } from '@/lib/catalog';
@@ -39,7 +40,8 @@ export function DesktopSidebar() {
   const { user } = useAuth();
   const { profile } = useProfile(user?.id);
   const { t, productLang } = useLang();
-  const { lists, items } = useWorkspace();
+  const { lists, archived, items } = useWorkspace();
+  const [showArchived, setShowArchived] = useState(false);
   const { count: liveCount } = useLiveTrips();
   const currentListId = useBazaarPrefs((state) => state.listId);
   const setList = useBazaarPrefs((state) => state.setList);
@@ -80,6 +82,8 @@ export function DesktopSidebar() {
                 router.navigate('/');
               }}
               onLongPress={() => openSheet({ kind: 'editList', listId: list.id })}
+              onMore={() => openSheet({ kind: 'editList', listId: list.id })}
+              moreLabel={t.moreFor(list.name)}
             />
           ))}
           <Row
@@ -89,6 +93,27 @@ export function DesktopSidebar() {
             icon={<Plus color={COLORS.muted} size={17} />}
             onPress={() => openSheet({ kind: 'newList' })}
           />
+          {archived.length > 0 && (
+            <Row
+              label={t.archivedHeading(archived.length)}
+              active={false}
+              muted
+              icon={<Archive color={COLORS.muted} size={17} />}
+              onPress={() => setShowArchived((open) => !open)}
+            />
+          )}
+          {showArchived &&
+            archived.map((list) => (
+              <Row
+                key={list.id}
+                label={list.name}
+                active={false}
+                muted
+                meta={t.restore}
+                icon={<Archive color={COLORS.muted} size={17} />}
+                onPress={() => openSheet({ kind: 'editList', listId: list.id })}
+              />
+            ))}
         </View>
 
         <View className="mt-1 gap-0.5 px-2">
@@ -188,6 +213,8 @@ function Row({
   muted,
   onPress,
   onLongPress,
+  onMore,
+  moreLabel,
 }: {
   label: string;
   sub?: string;
@@ -199,6 +226,9 @@ function Row({
   muted?: boolean;
   onPress: () => void;
   onLongPress?: () => void;
+  /** The row's own menu, shown on hover or when the row is the current one. */
+  onMore?: () => void;
+  moreLabel?: string;
 }) {
   const { hovered, bind } = useHover();
 
@@ -235,6 +265,7 @@ function Row({
           {meta}
         </Text>
       )}
+      {!!onMore && (hovered || active) && <MoreButton label={moreLabel ?? label} onPress={onMore} size={16} />}
       {/* The shortcut prints itself, so the keyboard is discoverable. */}
       {!!shortcut && <Text className="text-[10px] font-semibold text-muted-foreground opacity-60">{shortcut}</Text>}
     </Pressable>
