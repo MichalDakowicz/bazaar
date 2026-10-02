@@ -1,7 +1,7 @@
 import { categoryAlt, categoryName, CATEGORY_ORDER, type Lang } from '@/lib/categories';
 import type { CategoryKey } from '@/lib/catalog/types';
 import { productAlt, productName } from '@/lib/search';
-import type { ListItem } from '@/types/bazaar';
+import type { ListItem, NewItem } from '@/types/bazaar';
 
 /**
  * A list, as the screen draws it. Everything here is derived — the database
@@ -29,6 +29,22 @@ export type ListView = {
 };
 
 /** An item still on the list: not carried out of the shop in a finished trip. */
+/**
+ * An item as the payload that would put it back. Everything an Undo re-inserts
+ * comes through here, so what survives a remove — the name, options and amount,
+ * but not the tick or who added it — is decided in one place.
+ */
+export function toNewItem(item: ListItem): NewItem {
+  return {
+    productId: item.productId,
+    cat: item.cat,
+    nameEn: item.nameEn,
+    namePl: item.namePl,
+    opt: item.opt,
+    qty: item.qty,
+  };
+}
+
 export function isLive(item: ListItem): boolean {
   return item.tripId === null;
 }

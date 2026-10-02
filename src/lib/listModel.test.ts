@@ -1,6 +1,6 @@
 import type { ListItem } from '@/types/bazaar';
 
-import { findOnList, isLive, itemAlt, itemName, justPicked, viewList } from './listModel';
+import { findOnList, isLive, itemAlt, itemName, justPicked, toNewItem, viewList } from './listModel';
 
 let n = 0;
 function item(over: Partial<ListItem> = {}): ListItem {
@@ -93,5 +93,16 @@ describe('findOnList and justPicked', () => {
     const b = item({ checkedAt: '2026-09-24T09:10:00Z' });
     const c = item({ checkedAt: '2026-09-24T09:05:00Z' });
     expect(justPicked([a, b, c], 2).map((i) => i.id)).toEqual([b.id, c.id]);
+  });
+});
+
+describe('toNewItem', () => {
+  it('keeps what makes it the same thing and drops the tick and the author', () => {
+    const ticked = item({ productId: 'milk', cat: 'dairy', nameEn: 'Milk', namePl: 'Mleko', opt: '3.2%', qty: '2 L', checkedAt: '2026-09-24T09:00:00Z', checkedBy: 'a' });
+    expect(toNewItem(ticked)).toEqual({ productId: 'milk', cat: 'dairy', nameEn: 'Milk', namePl: 'Mleko', opt: '3.2%', qty: '2 L' });
+  });
+
+  it('carries a hand-typed item with no catalogue id', () => {
+    expect(toNewItem(item({ productId: null, nameEn: 'Birthday candles', namePl: 'Świeczki' })).productId).toBeNull();
   });
 });

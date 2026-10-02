@@ -48,23 +48,7 @@ export function useListScreen(listId: string | undefined) {
 
   const uncheck = useCallback((item: ListItem) => void writes.uncheck(item), [writes]);
 
-  const remove = useCallback(
-    async (item: ListItem) => {
-      const done = await writes.removeItems([item.id]);
-      if (done) {
-        say(`${itemName(item, productLang)} · ${t.removed}`, {
-          label: t.undo,
-          onPress: () => {
-            const { id: _id, ...rest } = item;
-            void writes.addItems(item.listId, [
-              { productId: rest.productId, cat: rest.cat, nameEn: rest.nameEn, namePl: rest.namePl, opt: rest.opt, qty: rest.qty },
-            ]);
-          },
-        });
-      }
-    },
-    [writes, say, productLang, t],
-  );
+  const more = useCallback((item: ListItem) => open({ kind: 'item', itemId: item.id }), [open]);
 
   return {
     list,
@@ -78,7 +62,7 @@ export function useListScreen(listId: string | undefined) {
     tripId: trip?.id ?? null,
     check,
     uncheck,
-    remove,
+    more,
     startShopping: async () => {
       if (list) await writes.startTrip(list.id, list.store);
     },

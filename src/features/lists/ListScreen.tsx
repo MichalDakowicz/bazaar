@@ -10,6 +10,7 @@ import { ProgressBar } from '@/components/stats/ProgressBar';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/states';
 import { useLang } from '@/features/bazaar/useBazaarSettings';
 import { ItemRow } from '@/features/lists/ItemRow';
+import { MoreButton } from '@/features/manage/MoreButton';
 import { TripBar } from '@/features/lists/TripBar';
 import { useListScreen } from '@/features/lists/useListScreen';
 import { useGutter } from '@/hooks/useResponsive';
@@ -26,7 +27,7 @@ export function ListScreen() {
   const { t, productLang } = useLang();
   const gutter = useGutter();
   const screen = useListScreen(id);
-  const { view, list, check, uncheck, remove, swipe } = screen;
+  const { view, list, check, uncheck, more, swipe } = screen;
 
   const rows = useMemo<CardRow[]>(() => {
     const out: CardRow[] = [];
@@ -48,7 +49,7 @@ export function ListScreen() {
           key: item.id,
           node: (
             <View className={[gutter, 'pb-1.5'].join(' ')}>
-              <ItemRow item={item} lang={productLang} swipe={swipe} onCheck={check} onUncheck={uncheck} onMore={remove} />
+              <ItemRow item={item} lang={productLang} swipe={swipe} onCheck={check} onUncheck={uncheck} onMore={more} />
             </View>
           ),
         });
@@ -71,14 +72,14 @@ export function ListScreen() {
           key: item.id,
           node: (
             <View className={gutter}>
-              <ItemRow item={item} lang={productLang} swipe={false} onCheck={check} onUncheck={uncheck} onMore={remove} />
+              <ItemRow item={item} lang={productLang} swipe={false} onCheck={check} onUncheck={uncheck} onMore={more} />
             </View>
           ),
         });
       }
     }
     return out;
-  }, [view, productLang, t, gutter, check, uncheck, remove, swipe]);
+  }, [view, productLang, t, gutter, check, uncheck, more, swipe]);
 
   if (screen.error) return <ErrorState message={readError(screen.error)} onRetry={screen.refetch} />;
   if (screen.loading) return <LoadingState />;
@@ -86,13 +87,18 @@ export function ListScreen() {
 
   const header = (
     <View className={[gutter, 'gap-3 pb-1'].join(' ')}>
-      <View>
-        <Text className="text-2xl font-bold tracking-tight text-foreground" numberOfLines={1}>
-          {list.name}
-        </Text>
-        <Text className="mt-0.5 text-xs text-muted-foreground" numberOfLines={1}>
-          {[list.store, list.whenText].filter(Boolean).join(' · ')}
-        </Text>
+      <View className="flex-row items-start justify-between gap-3">
+        <View className="min-w-0 flex-1">
+          <Text className="text-2xl font-bold tracking-tight text-foreground" numberOfLines={1}>
+            {list.name}
+          </Text>
+          <Text className="mt-0.5 text-xs text-muted-foreground" numberOfLines={1}>
+            {[list.store, list.whenText].filter(Boolean).join(' · ')}
+          </Text>
+        </View>
+        <View className="pt-2">
+          <MoreButton label={t.moreFor(list.name)} onPress={screen.edit} size={22} />
+        </View>
       </View>
       <ProgressBar percent={view.percent} />
       <Text className="text-xs text-muted-foreground">

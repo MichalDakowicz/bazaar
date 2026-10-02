@@ -4,6 +4,7 @@ import { ScreenTop } from '@/components/layout/ScreenTop';
 import { Overline } from '@/components/ui/controls';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/states';
 import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { MoreButton } from '@/features/manage/MoreButton';
 import { usePlannerCopy } from '@/features/planner/copy';
 import { PlannerListRow } from '@/features/planner/PlannerListRow';
 import type { PlannerListModel } from '@/features/planner/usePlannerList';
@@ -44,9 +45,12 @@ export function PlannerList({
           <EmptyState title={t.noListsTitle} body={copy.noListsBody} action={{ label: t.newList, onPress: onNewList }} />
         ) : (
           <>
-            <Text className="text-xl font-bold text-foreground" numberOfLines={1}>
-              {list.name}
-            </Text>
+            <View className="flex-row items-center justify-between gap-3">
+              <Text className="min-w-0 flex-1 text-xl font-bold text-foreground" numberOfLines={1}>
+                {list.name}
+              </Text>
+              <MoreButton label={t.moreFor(list.name)} onPress={list.edit} size={20} />
+            </View>
             <Text className="mt-0.5 text-xs text-muted-foreground" numberOfLines={2}>
               {list.meta}
             </Text>
@@ -55,7 +59,7 @@ export function PlannerList({
               <View className="mt-5">
                 <Text className="mb-1.5 text-[11px] font-semibold uppercase tracking-widest text-primary">{t.justAdded}</Text>
                 {list.just.map((line) => (
-                  <PlannerListRow key={line.id} line={line} onToggle={list.toggle} />
+                  <PlannerListRow key={line.id} line={line} onToggle={list.toggle} onMore={list.more} />
                 ))}
               </View>
             )}
@@ -64,7 +68,7 @@ export function PlannerList({
               <View key={section.key} className="mt-5">
                 <Overline className="mb-1.5">{section.title}</Overline>
                 {section.lines.map((line) => (
-                  <PlannerListRow key={line.id} line={line} onToggle={list.toggle} />
+                  <PlannerListRow key={line.id} line={line} onToggle={list.toggle} onMore={list.more} />
                 ))}
               </View>
             ))}

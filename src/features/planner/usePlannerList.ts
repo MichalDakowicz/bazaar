@@ -5,6 +5,7 @@ import { useBazaarWrites } from '@/features/bazaar/useBazaarWrites';
 import { useLiveTrips } from '@/features/bazaar/useLiveTrips';
 import { useWorkspace } from '@/features/bazaar/useWorkspace';
 import { viewList } from '@/lib/listModel';
+import { useBazaarUi } from '@/store/bazaarPrefs';
 import { justLines, listSections, type PlannerLine, type PlannerSection } from '@/lib/planner';
 import type { BazaarList, ListItem } from '@/types/bazaar';
 
@@ -16,6 +17,10 @@ export type PlannerListModel = {
   just: PlannerLine[];
   sections: PlannerSection[];
   toggle: (line: PlannerLine) => void;
+  /** The line's own menu: amount, details, remove. */
+  more: (line: PlannerLine) => void;
+  /** The list's own menu: rename, archive, empty, delete. */
+  edit: () => void;
 };
 
 /**
@@ -28,6 +33,7 @@ export function usePlannerList(list: BazaarList | null, items: ListItem[], justI
   const { me, nameOf } = useWorkspace();
   const { openFor } = useLiveTrips();
   const writes = useBazaarWrites();
+  const open = useBazaarUi((state) => state.open);
 
   const view = useMemo(() => viewList(items, productLang), [items, productLang]);
   const trip = list ? openFor(list.id) : null;
@@ -38,6 +44,8 @@ export function usePlannerList(list: BazaarList | null, items: ListItem[], justI
     [writes],
   );
 
+  const more = useCallback((line: PlannerLine) => open({ kind: 'item', itemId: line.item.id }), [open]);
+
   return useMemo(() => {
     if (!list) return null;
     return {
@@ -47,6 +55,8 @@ export function usePlannerList(list: BazaarList | null, items: ListItem[], justI
       just: justLines(items, justIds, productLang),
       sections: listSections(view, justIds, t.inBasketH, productLang),
       toggle,
+      more,
+      edit: () => open({ kind: 'editList', listId: list.id }),
     };
-  }, [list, view, items, justIds, productLang, t, shopper, toggle]);
+  }, [list, view, items, justIds, productLang, t, shopper, toggle, more, open]);
 }

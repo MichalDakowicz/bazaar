@@ -3,6 +3,8 @@ import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { BazaarCard } from '@/components/media/BazaarCard';
+import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { MoreButton } from '@/features/manage/MoreButton';
 import { SwipeRow } from '@/features/lists/SwipeRow';
 import { itemAlt, itemName } from '@/lib/listModel';
 import type { Lang } from '@/lib/categories';
@@ -29,8 +31,10 @@ type ItemRowProps = {
 };
 
 function ItemRowBase({ item, lang, swipe, onCheck, onUncheck, onMore, dense }: ItemRowProps) {
+  const { t } = useLang();
   const name = itemName(item, lang);
   const alt = itemAlt(item, lang);
+  const more = <MoreButton label={t.moreFor(name)} onPress={() => onMore(item)} />;
 
   if (item.checkedAt) {
     return (
@@ -47,6 +51,7 @@ function ItemRowBase({ item, lang, swipe, onCheck, onUncheck, onMore, dense }: I
           {name}
         </Text>
         <Text className="text-xs text-muted-foreground">{item.qty}</Text>
+        {more}
       </Pressable>
     );
   }
@@ -81,7 +86,12 @@ function ItemRowBase({ item, lang, swipe, onCheck, onUncheck, onMore, dense }: I
               </Text>
             ) : undefined
           }
-          trailing={<Text className="text-sm text-muted-foreground">{item.qty}</Text>}
+          trailing={
+            <View className="flex-row items-center gap-2">
+              <Text className="text-sm text-muted-foreground">{item.qty}</Text>
+              {more}
+            </View>
+          }
         />
       </Pressable>
     </SwipeRow>

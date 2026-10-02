@@ -1,6 +1,8 @@
 import { Check } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
+import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { MoreButton } from '@/features/manage/MoreButton';
 import { usePlannerCopy } from '@/features/planner/copy';
 import type { PlannerLine } from '@/lib/planner';
 import { COLORS } from '@/theme/colors';
@@ -11,7 +13,16 @@ import { COLORS } from '@/theme/colors';
  * ticks it — enough to cross something off at the desk; the swipe and the
  * basket belong to the phone.
  */
-export function PlannerListRow({ line, onToggle }: { line: PlannerLine; onToggle: (line: PlannerLine) => void }) {
+export function PlannerListRow({
+  line,
+  onToggle,
+  onMore,
+}: {
+  line: PlannerLine;
+  onToggle: (line: PlannerLine) => void;
+  onMore: (line: PlannerLine) => void;
+}) {
+  const { t } = useLang();
   const copy = usePlannerCopy();
 
   return (
@@ -37,6 +48,7 @@ export function PlannerListRow({ line, onToggle }: { line: PlannerLine; onToggle
         <Text className="text-muted-foreground">{line.rest}</Text>
       </Text>
       <Text className="text-xs text-muted-foreground">{line.qty}</Text>
+      <MoreButton label={t.moreFor(line.name)} onPress={() => onMore(line)} size={15} />
     </View>
   );
 }
