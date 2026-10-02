@@ -21,7 +21,14 @@ export { plural } from '@/lib/plural';
  * than as a database with no tables.
  */
 export function readError(error: unknown): string {
-  const message = error instanceof Error ? error.message : String(error ?? '');
+  // supabase-js rejects with plain objects ({ message, code, details }) as often
+  // as with Errors, and String() of one of those is "[object Object]".
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === 'object' && error !== null && 'message' in error
+        ? String((error as { message: unknown }).message)
+        : String(error ?? '');
   if (/does not exist|PGRST205|schema cache/i.test(message)) {
     return 'Bazaar’s tables are not in the database yet. Run supabase/schema.sql in the Supabase dashboard, then pull to refresh.';
   }

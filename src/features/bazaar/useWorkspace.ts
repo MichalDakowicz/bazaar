@@ -152,7 +152,14 @@ export function useWorkspace(): Workspace {
     activity,
     people,
     loading: listsQuery.isLoading || (hasLists && (itemsQuery.isLoading || tripsQuery.isLoading)),
-    error: listsQuery.error ?? itemsQuery.error ?? tripsQuery.error ?? activityQuery.error ?? null,
+    // An error only counts while there is nothing to show: a refetch that fails
+    // behind good cached data (a dropped connection on a tram) must not replace
+    // the list with an error screen.
+    error:
+      (!listsQuery.data && listsQuery.error) ||
+      (hasLists && !itemsQuery.data && itemsQuery.error) ||
+      (hasLists && !tripsQuery.data && tripsQuery.error) ||
+      null,
     refetch,
     itemsOf,
     list,
