@@ -27,7 +27,7 @@ import { COLORS } from '@/theme/colors';
 
 export default function Login() {
   const { user } = useAuth();
-  const { show } = useToast();
+  const { say } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
@@ -45,14 +45,14 @@ export default function Login() {
     try {
       await action();
     } catch (error) {
-      show(error instanceof Error ? error.message : 'Something went wrong');
+      say(error instanceof Error ? error.message : 'Something went wrong');
     } finally {
       setBusy(false);
     }
   };
 
   const handleEmail = () => {
-    if (!email || !password) return show('Enter an email and password');
+    if (!email || !password) return say('Enter an email and password');
     runAction(() => (mode === 'signIn' ? signInWithEmail(email, password) : signUpWithEmail(email, password)));
   };
 
