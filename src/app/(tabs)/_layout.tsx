@@ -1,4 +1,7 @@
+import { BlurTargetView } from 'expo-blur';
 import { Redirect, Tabs } from 'expo-router';
+import { useRef } from 'react';
+import type { View } from 'react-native';
 
 import { AppChrome } from '@/components/layout/AppChrome';
 import { useAuth } from '@/features/auth/AuthProvider';
@@ -17,25 +20,32 @@ import { BazaarSheets } from '@/features/sheets/BazaarSheets';
  */
 export default function TabsLayout() {
   const { user } = useAuth();
+  const blurTarget = useRef<View>(null);
 
   if (!user) return <Redirect href="/login" />;
 
   return (
     <>
-      <Tabs
-        tabBar={() => <AppChrome />}
-        // No scene animation: react-navigation cross-fades over the navigator's
-        // own background, which flashes white on every swap. The movement that
-        // makes a tab change feel smooth lives in the bar, where the marker
-        // slides between destinations.
-        screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'hsl(0 0% 3.9%)' } }}
-      >
-        <Tabs.Screen name="index" options={{ title: 'Lists' }} />
-        <Tabs.Screen name="catalog" options={{ title: 'Catalog' }} />
-        <Tabs.Screen name="history" options={{ title: 'History' }} />
-        <Tabs.Screen name="household" options={{ title: 'Household' }} />
-        <Tabs.Screen name="profile" options={{ title: 'Settings' }} />
-      </Tabs>
+      {/* The chrome sits beside the navigator, not in its `tabBar` slot: the islands'
+          glass blurs the scenes, and can only sample a `BlurTargetView` it is not
+          inside. */}
+      <BlurTargetView ref={blurTarget} style={{ flex: 1 }}>
+        <Tabs
+          tabBar={() => null}
+          // No scene animation: react-navigation cross-fades over the navigator's
+          // own background, which flashes white on every swap. The movement that
+          // makes a tab change feel smooth lives in the bar, where the marker
+          // slides between destinations.
+          screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'hsl(0 0% 3.9%)' } }}
+        >
+          <Tabs.Screen name="index" options={{ title: 'Lists' }} />
+          <Tabs.Screen name="catalog" options={{ title: 'Catalog' }} />
+          <Tabs.Screen name="history" options={{ title: 'History' }} />
+          <Tabs.Screen name="household" options={{ title: 'Household' }} />
+          <Tabs.Screen name="profile" options={{ title: 'Settings' }} />
+        </Tabs>
+      </BlurTargetView>
+      <AppChrome blurTarget={blurTarget} />
       {/* One instance of each sheet for the whole app, so the sidebar's New list
           and a row's own button open the same one (PING.md §9.8). */}
       <BazaarSheets />

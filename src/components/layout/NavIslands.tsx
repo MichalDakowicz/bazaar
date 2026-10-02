@@ -1,6 +1,6 @@
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
-import { useCallback, useEffect, type ReactNode } from 'react';
+import { useCallback, useEffect, type ReactNode, type RefObject } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,8 +17,10 @@ import { useProfile } from '@/hooks/useProfile';
 import { useHover } from '@/hooks/useResponsive';
 import { COLORS } from '@/theme/colors';
 
-// Real backdrop blur on Android needs the Dimezis backend; without it BlurView
-// falls back to a flat tint and the islands look painted on rather than floating.
+// Real backdrop blur on Android needs the Dimezis backend *and* a `blurTarget`: the
+// content the glass blurs has to sit in a `BlurTargetView` the island can point
+// at. Without one the native side drops to a flat tint and whatever scrolls under
+// an island shows straight through it.
 const BLUR_METHOD = Platform.OS === 'android' ? 'dimezisBlurView' : 'none';
 
 const DESTINATIONS = NAV_DESTINATIONS.slice(0, 4);
@@ -38,7 +40,7 @@ const SLOT = DEST_WIDTH + DEST_GAP;
  * Absolutely positioned on purpose: the glass is only glass if the wall scrolls
  * under it, which is why every body pads with `useNavBarSpace`.
  */
-export function NavIslands() {
+export function NavIslands({ blurTarget }: { blurTarget?: RefObject<View | null> }) {
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const router = useRouter();
@@ -84,7 +86,7 @@ export function NavIslands() {
       <LiveCue />
 
       <View style={styles.row} pointerEvents="box-none">
-        <Island style={styles.round}>
+        <Island style={styles.round} blurTarget={blurTarget}>
           <Pressable
             onPress={action.onPress}
             accessibilityRole="button"
@@ -105,7 +107,7 @@ export function NavIslands() {
           </Pressable>
         </Island>
 
-        <Island style={styles.pill}>
+        <Island style={styles.pill} blurTarget={blurTarget}>
           <Animated.View style={[styles.marker, markerStyle]} pointerEvents="none" />
           {DESTINATIONS.map((destination) => (
             <NavDestinationButton
@@ -120,7 +122,10 @@ export function NavIslands() {
 
         {/* The plate's hairline turns accent when active — never a ring drawn
             around the avatar itself, which reads as a notification. */}
-        <Island style={[styles.round, { borderColor: profileActive ? COLORS.accent : COLORS.islandEdge }]}>
+        <Island
+          style={[styles.round, { borderColor: profileActive ? COLORS.accent : COLORS.islandEdge }]}
+          blurTarget={blurTarget}
+        >
           <Pressable
             onPress={() => go(PROFILE)}
             accessibilityRole="tab"
@@ -138,13 +143,22 @@ export function NavIslands() {
 }
 
 /** One glass plate: blurred backdrop, translucent fill, hairline edge. */
-function Island({ children, style }: { children: ReactNode; style?: object | object[] }) {
+function Island({
+  children,
+  style,
+  blurTarget,
+}: {
+  children: ReactNode;
+  style?: object | object[];
+  blurTarget?: RefObject<View | null>;
+}) {
   return (
     <View style={[styles.island, style]}>
       <BlurView
         intensity={38}
         tint="dark"
-        experimentalBlurMethod={BLUR_METHOD}
+        blurMethod={blurTarget ? BLUR_METHOD : 'none'}
+        blurTarget={blurTarget}
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
       />
