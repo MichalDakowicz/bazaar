@@ -49,9 +49,8 @@ export function useUserSettings() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Radar rewrites `current_streak` from its own app; without this the
-  // cross-app strip on Today would show yesterday's film streak until a cold
-  // start.
+  // The theme is picked in any of the six apps; hearing about it here is what
+  // makes "light in Radar" mean light in the next app opened.
   useEffect(() => {
     if (!user) return;
     const channel = supabase

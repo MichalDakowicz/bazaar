@@ -36,6 +36,8 @@ export type BazaarCardProps = {
   dense?: boolean;
   /** The title in the card's strongest weight. Off for secondary lines like feed text. */
   strong?: boolean;
+  /** How many lines the title may take. One, except for prose like a feed sentence. */
+  titleLines?: number;
   onPress?: () => void;
   accessibilityLabel?: string;
 };
@@ -50,6 +52,7 @@ function BazaarCardBase({
   selected = false,
   dense = false,
   strong = true,
+  titleLines = 1,
   onPress,
   accessibilityLabel,
 }: BazaarCardProps) {
@@ -84,7 +87,7 @@ function BazaarCardBase({
         <View className={['flex-row items-center', dense ? 'gap-2.5' : 'gap-3'].join(' ')}>
           {leading}
           <View className="min-w-0 flex-1">
-            <Text className={[strong ? 'font-bold' : 'font-medium', 'text-foreground', dense ? 'text-sm' : 'text-base'].join(' ')} numberOfLines={1}>
+            <Text className={[strong ? 'font-bold' : 'font-medium', 'text-foreground', dense ? 'text-sm' : 'text-base'].join(' ')} numberOfLines={titleLines}>
               {title}
             </Text>
             {typeof subtitle === 'string' ? (

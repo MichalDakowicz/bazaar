@@ -18,8 +18,8 @@ const AuthContext = createContext<AuthContextValue>({
 /**
  * The session, which is the *same* session as every Ping app: one
  * Supabase project, one account, one login (docs/shared-database.md). Signing
- * out here signs you out of the idea dump, not out of your film shelf, but
- * it is the same credential either way.
+ * out of Bazaar can end only this app's session or every Ping app's — the
+ * sign-out sheet asks — but it is the same credential either way.
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
