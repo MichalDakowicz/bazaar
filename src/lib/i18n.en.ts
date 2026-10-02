@@ -53,6 +53,7 @@ export const en = {
   swipeCheck: '✓',
   putInBasket: 'Put in basket',
   removeItem: 'Remove',
+  removed: 'Removed',
   edit: 'Edit',
 
   // add
@@ -170,6 +171,7 @@ export const en = {
   tablesMissing: 'Bazaar’s tables are not in the database yet. Run supabase/schema.sql in the Supabase dashboard, then pull to refresh.',
   nothingMatches: 'Nothing matches',
   you_: 'You',
+  someone: 'Someone',
 };
 
 export type Dictionary = typeof en;

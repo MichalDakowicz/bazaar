@@ -509,33 +509,37 @@ revoke all on function public.bazaar_finish_trip(uuid) from public;
 grant execute on function public.bazaar_finish_trip(uuid) to authenticated;
 
 -- Reuse: copy what a past trip bought onto a list you are on, minus whatever is
--- already waiting there unticked. Returns how many rows it added.
+-- already waiting there unticked. Returns the ids it added, so the caller can
+-- offer an Undo that takes back exactly those and nothing else.
 create or replace function public.bazaar_reuse_trip(p_trip uuid, p_list uuid)
-returns int
+returns uuid[]
 language plpgsql
 security definer
 set search_path = ''
 as $$
 declare
   v_source uuid;
-  v_added  int;
+  v_ids    uuid[];
 begin
   select t.list_id into v_source from public.bazaar_trips t where t.id = p_trip;
   if v_source is null or not private.bazaar_on_list(v_source) or not private.bazaar_on_list(p_list) then
     raise exception 'You need to be on both lists to copy between them.';
   end if;
 
-  insert into public.bazaar_items (list_id, added_by, product_id, cat, name_en, name_pl, opt, qty)
-  select p_list, auth.uid(), i.product_id, i.cat, i.name_en, i.name_pl, i.opt, i.qty
-  from public.bazaar_items i
-  where i.trip_id = p_trip
-    and not exists (
-      select 1 from public.bazaar_items live
-      where live.list_id = p_list and live.trip_id is null and live.checked_at is null
-        and live.name_en = i.name_en and live.opt = i.opt
-    );
-  get diagnostics v_added = row_count;
-  return v_added;
+  with inserted as (
+    insert into public.bazaar_items (list_id, added_by, product_id, cat, name_en, name_pl, opt, qty)
+    select p_list, auth.uid(), i.product_id, i.cat, i.name_en, i.name_pl, i.opt, i.qty
+    from public.bazaar_items i
+    where i.trip_id = p_trip
+      and not exists (
+        select 1 from public.bazaar_items live
+        where live.list_id = p_list and live.trip_id is null and live.checked_at is null
+          and live.name_en = i.name_en and live.opt = i.opt
+      )
+    returning id
+  )
+  select coalesce(array_agg(id), '{}'::uuid[]) into v_ids from inserted;
+  return v_ids;
 end;
 $$;
 revoke all on function public.bazaar_reuse_trip(uuid, uuid) from public;

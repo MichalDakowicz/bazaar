@@ -1,46 +1,59 @@
 import { usePathname, useRouter } from 'expo-router';
-import { ChevronDown, Settings } from 'lucide-react-native';
+import { Plus, Settings } from 'lucide-react-native';
+import { type ReactNode } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { LiveCue } from '@/components/layout/LiveCue';
-import { activeTabFor, NAV_DESTINATIONS, type NavDestination } from '@/components/layout/navDestinations';
+import { activeTabFor, NAV_DESTINATIONS } from '@/components/layout/navDestinations';
+import { CategoryGlyph } from '@/components/media/CategoryGlyph';
 import { Overline } from '@/components/ui/controls';
 import { useAuth } from '@/features/auth/AuthProvider';
-import { useCellar, useCurrentShelf } from '@/features/cellar/useCellar';
-import { useUnfiledCount } from '@/features/cellar/useUnfiledCount';
+import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { useLiveTrips } from '@/features/bazaar/useLiveTrips';
+import { useWorkspace } from '@/features/bazaar/useWorkspace';
 import { Avatar } from '@/features/friends/Avatar';
 import { useProfile } from '@/hooks/useProfile';
 import { SIDEBAR_WIDTH, useHover, webTransition } from '@/hooks/useResponsive';
-import { useCellarSheets } from '@/store/cellarPrefs';
+import { CATEGORY_COUNTS } from '@/lib/catalog';
+import { CATEGORIES, categoryAlt, categoryName } from '@/lib/categories';
+import { isChecked } from '@/lib/listModel';
+import { useBazaarPrefs, useBazaarUi } from '@/store/bazaarPrefs';
 import { COLORS } from '@/theme/colors';
 
 /**
- * The desktop shell's navigation: the nav islands, unpacked.
+ * The desktop shell's navigation: the nav islands, unpacked — and then some.
  *
- * The islands are the phone signature and they earn it there — a thumb reaches
- * the bottom of the screen and a glyph is all that fits. A mouse has the
+ * The islands are the phone signature and they earn it there. A mouse has the
  * opposite constraints: 232px of permanent left margin costs nothing on a
- * window this wide, and a pointer user should not have to learn five glyphs or
- * hover a plate to find out where a glyph goes. So what the islands compress is
- * spelled out here — the destination names, their shortcut digits, and the
- * shelf you are standing in front of.
+ * window this wide, so what the islands compress is spelled out here — your
+ * lists, the other pages, the shop's sections — and the planner reads straight
+ * off it. A shopping list is the one app in the family where "where am I
+ * putting this" is the main question, and the sidebar answers it.
  *
  * It carries navigation and nothing else. The screen's contextual action is
- * *not* here: on a window this wide the sidebar is a screen's width away from
- * the content it would act on, so that button lives on the page itself
- * (components/layout/ScreenAction) where the thing it acts on is.
+ * *not* here (PING.md §8.6): it lives on the page, beside what it changes.
  */
 export function DesktopSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();
   const { profile } = useProfile(user?.id);
-  const { shelves } = useCellar();
-  const { shelf } = useCurrentShelf(shelves);
-  const openShelfPicker = useCellarSheets((state) => state.shelfPicker);
+  const { t, productLang } = useLang();
+  const { lists, items } = useWorkspace();
+  const { count: liveCount } = useLiveTrips();
+  const currentListId = useBazaarPrefs((state) => state.listId);
+  const setList = useBazaarPrefs((state) => state.setList);
+  const catalogCat = useBazaarPrefs((state) => state.catalogCat);
+  const setCatalogCat = useBazaarPrefs((state) => state.setCatalogCat);
+  const openSheet = useBazaarUi((state) => state.open);
 
   const activeTab = activeTabFor(pathname);
-  const unfiled = useUnfiledCount();
+  const onPlanner = activeTab === 'index' || activeTab === 'catalog';
+  const current = lists.find((list) => list.id === currentListId) ?? lists[0] ?? null;
+  const history = NAV_DESTINATIONS[2];
+  const household = NAV_DESTINATIONS[3];
+
+  const leftOf = (listId: string) => items.filter((item) => item.listId === listId && !isChecked(item)).length;
 
   return (
     <View
@@ -48,69 +61,112 @@ export function DesktopSidebar() {
       style={{ width: SIDEBAR_WIDTH }}
     >
       <ScrollView contentContainerStyle={{ paddingVertical: 22 }} showsVerticalScrollIndicator={false}>
-        <View className="px-4">
-          <Text className="text-xl font-bold tracking-tight text-foreground">cellar</Text>
+        <View className="flex-row items-center gap-2 px-5">
+          <Text className="text-lg font-bold tracking-tight text-foreground">Bazaar</Text>
+          <View className="h-[7px] w-[7px] rounded-full bg-primary" />
         </View>
-
-        {/* The shelf switcher is a permanent row here rather than a heading you
-            have to know is pressable, because on desktop it is also the answer
-            to "which shelf am I filing into" from every screen. */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="switch shelf"
-          onPress={() => openShelfPicker?.()}
-          className="mx-3 mt-4 flex-row items-center gap-2 rounded-lg bg-secondary px-3 py-2.5 active:opacity-80"
-        >
-          <View className="min-w-0 flex-1">
-            <Overline>shelf</Overline>
-            <Text className="mt-0.5 text-sm font-semibold text-foreground" numberOfLines={1}>
-              {shelf?.name ?? 'every shelf'}
-            </Text>
-          </View>
-          <ChevronDown size={14} color={COLORS.muted} strokeWidth={2.4} />
-        </Pressable>
 
         <View className="mt-5 gap-0.5 px-2">
-          {NAV_DESTINATIONS.map((destination, index) => (
-            <SidebarRow
-              key={destination.tabName}
-              destination={destination}
-              active={destination.tabName === activeTab}
-              badge={destination.tabName === 'inbox' ? unfiled : 0}
-              shortcut={String(index + 1)}
-              onPress={() => router.navigate(destination.href)}
+          {lists.map((list, index) => (
+            <Row
+              key={list.id}
+              label={list.name}
+              active={onPlanner && current?.id === list.id}
+              meta={String(leftOf(list.id))}
+              shortcut={index === 0 ? '1' : ''}
+              icon={NAV_DESTINATIONS[0].icon(onPlanner && current?.id === list.id ? COLORS.foreground : COLORS.muted, 17)}
+              onPress={() => {
+                setList(list.id);
+                router.navigate('/');
+              }}
+              onLongPress={() => openSheet({ kind: 'editList', listId: list.id })}
             />
           ))}
+          <Row
+            label={t.newList}
+            active={false}
+            muted
+            icon={<Plus color={COLORS.muted} size={17} />}
+            onPress={() => openSheet({ kind: 'newList' })}
+          />
         </View>
 
+        <View className="mt-1 gap-0.5 px-2">
+          <Row
+            label={t.history}
+            active={activeTab === history.tabName}
+            shortcut="3"
+            icon={history.icon(activeTab === history.tabName ? COLORS.foreground : COLORS.muted, 17)}
+            onPress={() => router.navigate(history.href)}
+          />
+          <Row
+            label={t.household}
+            active={activeTab === household.tabName}
+            meta={liveCount > 0 ? t.live : ''}
+            metaTone={liveCount > 0 ? 'live' : 'muted'}
+            shortcut="4"
+            icon={household.icon(activeTab === household.tabName ? COLORS.foreground : COLORS.muted, 17)}
+            onPress={() => router.navigate(household.href)}
+          />
+        </View>
+
+        <View className="mt-6 flex-row items-baseline gap-2 px-5 pb-2">
+          <Overline className="flex-1">{t.catalog}</Overline>
+          <Text className="text-xs text-muted-foreground">
+            {Object.values(CATEGORY_COUNTS).reduce((sum, n) => sum + n, 0).toLocaleString('en')}
+          </Text>
+        </View>
+        <View className="gap-0.5 px-2">
+          {CATEGORIES.map((category) => {
+            const active = onPlanner && catalogCat === category.key;
+            return (
+              <Row
+                key={category.key}
+                label={categoryName(category.key, productLang)}
+                sub={categoryAlt(category.key, productLang)}
+                meta={String(CATEGORY_COUNTS[category.key] ?? 0)}
+                active={active}
+                icon={<CategoryGlyph glyph={category.glyph} size={16} color={active ? COLORS.foreground : COLORS.muted} />}
+                onPress={() => {
+                  setCatalogCat(category.key);
+                  router.navigate('/');
+                }}
+              />
+            );
+          })}
+        </View>
       </ScrollView>
 
-      {/* Sits above the footer rather than beside the destinations: it is a
-          statement about the whole window, not about a route. */}
+      {/* A statement about the whole window, not about a route. */}
       <View className="items-start px-3">
         <LiveCue />
       </View>
 
       {/* Two Pressables side by side, never one inside the other: on web a
-          Pressable is a <button>, and a button inside a button is invalid DOM
-          that React refuses to render. */}
+          Pressable is a <button>, and a button inside a button is invalid DOM. */}
       <View className="flex-row items-center gap-1 border-t border-border/60 px-3 py-3">
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="profile"
+          accessibilityLabel={t.settings}
           onPress={() => router.navigate('/profile')}
           className="min-w-0 flex-1 flex-row items-center gap-2.5 rounded-lg px-1 py-1.5 active:opacity-80"
+          style={activeTab === 'profile' ? { backgroundColor: COLORS.islandPlate } : undefined}
         >
-          <Avatar profile={profile} size={30} />
-          <Text className="min-w-0 flex-1 text-xs font-semibold text-foreground" numberOfLines={1}>
-            {profile?.displayName || profile?.username || 'you'}
-          </Text>
+          <Avatar profile={profile} size={32} />
+          <View className="min-w-0 flex-1">
+            <Text className="text-sm font-semibold text-foreground" numberOfLines={1}>
+              {profile?.displayName || profile?.username || ' '}
+            </Text>
+            <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+              {t.settings}
+            </Text>
+          </View>
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="settings"
+          accessibilityLabel={t.settings}
           hitSlop={8}
-          onPress={() => router.navigate('/settings')}
+          onPress={() => router.navigate('/profile')}
           className="rounded-full p-1.5 active:opacity-70"
         >
           <Settings size={15} color={COLORS.muted} strokeWidth={2} />
@@ -120,19 +176,29 @@ export function DesktopSidebar() {
   );
 }
 
-/** One destination: glyph, name, count, and the key that gets you there. */
-function SidebarRow({
-  destination,
-  active,
-  badge,
+/** One row: glyph, name (and its other-language twin), a figure, the key that gets you there. */
+function Row({
+  label,
+  sub,
+  meta,
+  metaTone = 'muted',
   shortcut,
+  icon,
+  active,
+  muted,
   onPress,
+  onLongPress,
 }: {
-  destination: NavDestination;
+  label: string;
+  sub?: string;
+  meta?: string;
+  metaTone?: 'muted' | 'live';
+  shortcut?: string;
+  icon: ReactNode;
   active: boolean;
-  badge: number;
-  shortcut: string;
+  muted?: boolean;
   onPress: () => void;
+  onLongPress?: () => void;
 }) {
   const { hovered, bind } = useHover();
 
@@ -140,36 +206,37 @@ function SidebarRow({
     <Pressable
       accessibilityRole="tab"
       accessibilityState={{ selected: active }}
-      accessibilityLabel={destination.label}
+      accessibilityLabel={label}
       onPress={onPress}
+      onLongPress={onLongPress}
       {...bind}
       style={[
         webTransition('background-color'),
         active ? { backgroundColor: COLORS.islandPlate } : hovered ? { backgroundColor: COLORS.chipGround } : null,
       ]}
-      className="flex-row items-center gap-2.5 rounded-lg px-3 py-2.5"
+      className="flex-row items-center gap-3 rounded-lg px-3 py-2"
     >
-      {destination.icon(active ? COLORS.foreground : COLORS.muted, 17)}
-      <Text
-        className={['min-w-0 flex-1 text-sm', active ? 'font-semibold text-foreground' : 'text-muted-foreground'].join(' ')}
-        numberOfLines={1}
-      >
-        {destination.label}
-      </Text>
-      {badge > 0 && <Badge count={badge} />}
-      {/* The shortcut prints itself, so the keyboard is discoverable instead of
-          being a thing you had to read the release notes to know about. */}
-      <Text className="text-[10px] font-semibold text-muted-foreground opacity-60">{shortcut}</Text>
+      {icon}
+      <View className="min-w-0 flex-1">
+        <Text
+          className={['text-sm', active ? 'font-semibold text-foreground' : muted ? 'text-muted-foreground' : 'font-semibold text-muted-foreground'].join(' ')}
+          numberOfLines={1}
+        >
+          {label}
+        </Text>
+        {!!sub && (
+          <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+            {sub}
+          </Text>
+        )}
+      </View>
+      {!!meta && (
+        <Text className="text-xs" style={{ color: metaTone === 'live' ? COLORS.live : COLORS.muted }}>
+          {meta}
+        </Text>
+      )}
+      {/* The shortcut prints itself, so the keyboard is discoverable. */}
+      {!!shortcut && <Text className="text-[10px] font-semibold text-muted-foreground opacity-60">{shortcut}</Text>}
     </Pressable>
-  );
-}
-
-function Badge({ count }: { count: number }) {
-  return (
-    <View className="min-w-[18px] items-center justify-center rounded-full bg-primary px-1.5 py-px">
-      <Text className="text-[10px] font-bold" style={{ color: COLORS.accentInk }}>
-        {count > 99 ? '99+' : count}
-      </Text>
-    </View>
   );
 }

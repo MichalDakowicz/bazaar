@@ -11,7 +11,7 @@ import { DEST_HEIGHT, DEST_WIDTH, NavDestinationButton } from '@/components/layo
 import { activeTabFor, NAV_DESTINATIONS, type NavDestination } from '@/components/layout/navDestinations';
 import { Avatar } from '@/features/friends/Avatar';
 import { useAuth } from '@/features/auth/AuthProvider';
-import { useUnfiledCount } from '@/features/cellar/useUnfiledCount';
+import { useLiveTrips } from '@/features/bazaar/useLiveTrips';
 import { NAV_ISLAND_GAP, NAV_ISLAND_HEIGHT } from '@/hooks/useNavBarSpace';
 import { useProfile } from '@/hooks/useProfile';
 import { useHover } from '@/hooks/useResponsive';
@@ -47,7 +47,7 @@ export function NavIslands() {
 
   const activeTab = activeTabFor(pathname);
   const action = useNavAction(pathname, activeTab);
-  const unfiled = useUnfiledCount();
+  const { count: shoppers } = useLiveTrips();
 
   const activeIndex = DESTINATIONS.findIndex((destination) => destination.tabName === activeTab);
   // One marker that travels, rather than four that fade in place — the slide is
@@ -112,7 +112,7 @@ export function NavIslands() {
               key={destination.tabName}
               destination={destination}
               active={destination.tabName === activeTab}
-              badge={destination.tabName === 'inbox' ? unfiled : 0}
+              badge={destination.tabName === 'household' ? shoppers : 0}
               onPress={() => go(destination)}
             />
           ))}

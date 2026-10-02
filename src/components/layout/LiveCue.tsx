@@ -4,7 +4,7 @@ import { useLiveStatus } from '@/store/liveStatus';
 import { COLORS } from '@/theme/colors';
 
 /**
- * The one mark that says the cellar is not currently being pushed changes.
+ * The one mark that says Bazaar is not currently being pushed changes.
  *
  * It exists because "live" is a promise, and an app that quietly stops keeping
  * it looks identical to one that has nothing new to show. A dropped socket is

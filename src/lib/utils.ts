@@ -23,7 +23,7 @@ export { plural } from '@/lib/plural';
 export function readError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error ?? '');
   if (/does not exist|PGRST205|schema cache/i.test(message)) {
-    return 'cellar’s tables are not in the database yet. run supabase/schema.sql in the supabase dashboard, then pull to refresh.';
+    return 'Bazaar’s tables are not in the database yet. Run supabase/schema.sql in the Supabase dashboard, then pull to refresh.';
   }
-  return message || 'the connection dropped somewhere between here and the server.';
+  return message || 'The connection dropped somewhere between here and the server.';
 }

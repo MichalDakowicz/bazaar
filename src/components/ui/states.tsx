@@ -8,7 +8,7 @@ import { COLORS } from '@/theme/colors';
  * failed load.
  */
 
-export function LoadingState({ label = 'loading' }: { label?: string }) {
+export function LoadingState({ label = 'Loading' }: { label?: string }) {
   return (
     <View className="items-center justify-center gap-3 py-16" accessibilityLabel={label}>
       <ActivityIndicator color={COLORS.accent} />
@@ -51,18 +51,18 @@ export function EmptyState({ title, body, action }: EmptyStateProps) {
 export function ErrorState({ message, onRetry }: { message?: string; onRetry?: () => void }) {
   return (
     <View className="w-full items-center gap-2 px-6 py-14">
-      <Text className="text-center text-xl font-bold text-foreground">that did not load</Text>
+      <Text className="text-center text-xl font-bold text-foreground">That did not load</Text>
       <Text className="text-center text-sm text-muted-foreground">
-        {message ?? 'the connection dropped somewhere between here and the server.'}
+        {message ?? 'The connection dropped somewhere between here and the server.'}
       </Text>
       {onRetry && (
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="try again"
+          accessibilityLabel="Try again"
           onPress={onRetry}
           className="mt-3 rounded-full border border-border px-5 py-3"
         >
-          <Text className="text-sm font-semibold text-foreground">try again</Text>
+          <Text className="text-sm font-semibold text-foreground">Try again</Text>
         </Pressable>
       )}
     </View>

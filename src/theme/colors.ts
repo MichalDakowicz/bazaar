@@ -85,6 +85,17 @@ export const COLORS = {
   mutedDeep: 'hsl(0 0% 45%)',
   danger: '#ef4444',
   dangerSoft: 'rgba(239,68,68,0.12)',
+  /** Somebody is out shopping right now: PING.md §4.4 status green on its 0.16 tint. */
+  live: '#22c55e',
+  liveTint: 'rgba(34,197,94,0.16)',
+  /** The fallback glyph on a raised ground. */
+  glyph: '#52525b',
+  /** A circle that is not ticked yet. */
+  ring: '#52525b',
+  /** The page ground, for the one gradient that has to fade into it. */
+  ground: '#0a0a0a',
+  /** The track behind a progress bar. */
+  track: 'rgba(255,255,255,0.1)',
   /** A row's ground under the mouse on web — never used on a touch build (§4.5). */
   rowHover: 'hsl(0 0% 16%)',
   islandFill: 'rgba(22,22,22,0.72)',

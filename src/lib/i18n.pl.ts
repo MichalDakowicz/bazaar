@@ -52,6 +52,7 @@ export const pl: Dictionary = {
   swipeCheck: '✓',
   putInBasket: 'Włóż do koszyka',
   removeItem: 'Usuń',
+  removed: 'Usunięto',
   edit: 'Edytuj',
 
   addTo: 'Dodaj do',
@@ -161,4 +162,5 @@ export const pl: Dictionary = {
   tablesMissing: 'Tabel Bazaara nie ma jeszcze w bazie. Uruchom supabase/schema.sql w panelu Supabase i odśwież.',
   nothingMatches: 'Nic nie pasuje',
   you_: 'Ty',
+  someone: 'Ktoś',
 };

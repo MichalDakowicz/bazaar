@@ -14,14 +14,14 @@ import {
 
 /**
  * The shared `public.user_settings` row — Radar's table, read here and written
- * only through `settingsToRow`, which can emit two columns and no others.
+ * only through `settingsToRow`, which can emit one column and no others.
  *
  * The row is owner-only (`settings_owner_all`), so this is always your own: a
  * friend's theme and a friend's film streak are not readable and are not meant
  * to be.
  */
 
-export { type FriendsVisibility, type ThemePref } from '@/lib/userSettings';
+export { type ThemePref } from '@/lib/userSettings';
 
 function settingsKey(userId: string | undefined) {
   return ['shared-settings', userId] as const;
@@ -30,7 +30,7 @@ function settingsKey(userId: string | undefined) {
 async function fetchSettings(userId: string): Promise<SharedSettings> {
   const { data, error } = await supabase
     .from('user_settings')
-    .select('theme, friends_visibility, current_streak, streak_updated_at, timezone')
+    .select('theme')
     .eq('user_id', userId)
     .maybeSingle();
   if (error) throw error;

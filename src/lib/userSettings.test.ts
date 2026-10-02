@@ -1,49 +1,25 @@
-import {
-  DEFAULT_SHARED_SETTINGS,
-  normalizeShared,
-  settingsToRow,
-  sharesAnything,
-} from '@/lib/userSettings';
+import { DEFAULT_SHARED_SETTINGS, normalizeShared, settingsToRow } from '@/lib/userSettings';
 
 describe('normalizeShared', () => {
   it('falls back to defaults with no row', () => {
     expect(normalizeShared(null)).toEqual(DEFAULT_SHARED_SETTINGS);
   });
 
-  it('reads the Radar streak snapshot without owning it', () => {
-    const settings = normalizeShared({
-      theme: 'light',
-      friends_visibility: 'public',
-      current_streak: 12,
-      streak_updated_at: '2026-09-11T18:00:00Z',
-      timezone: 'Europe/Warsaw',
-    });
-    expect(settings.theme).toBe('light');
-    expect(settings.friendsVisibility).toBe('public');
-    expect(settings.radarStreak).toBe(12);
-  });
-
-  it('rejects a visibility it does not recognise', () => {
-    expect(normalizeShared({ friends_visibility: 'everyone' } as never).friendsVisibility).toBe('friends');
+  it('reads the theme and rejects one it does not know', () => {
+    expect(normalizeShared({ theme: 'light' }).theme).toBe('light');
+    expect(normalizeShared({ theme: 'system' }).theme).toBe('system');
+    expect(normalizeShared({ theme: 'sepia' }).theme).toBe('dark');
+    expect(normalizeShared({ theme: null }).theme).toBe('dark');
   });
 });
 
 describe('settingsToRow', () => {
-  it('emits only the two columns Cellar is allowed to write', () => {
-    expect(settingsToRow({ theme: 'dark', friendsVisibility: 'noone' })).toEqual({
-      theme: 'dark',
-      friends_visibility: 'noone',
-    });
+  it('emits only the one column Bazaar is allowed to write', () => {
+    expect(settingsToRow({ theme: 'dark' })).toEqual({ theme: 'dark' });
   });
 
-  it('refuses to write the Radar streak even when handed one', () => {
-    expect(settingsToRow({ radarStreak: 99 } as never)).toEqual({});
-  });
-});
-
-describe('sharesAnything', () => {
-  it('is the gate on every social surface', () => {
-    expect(sharesAnything({ friendsVisibility: 'noone' })).toBe(false);
-    expect(sharesAnything({ friendsVisibility: 'friends' })).toBe(true);
+  it('refuses to write anything else even when handed it', () => {
+    expect(settingsToRow({ radarStreak: 99, friendsVisibility: 'noone' } as never)).toEqual({});
+    expect(settingsToRow({})).toEqual({});
   });
 });
