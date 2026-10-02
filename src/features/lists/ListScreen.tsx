@@ -115,7 +115,13 @@ export function ListScreen() {
         rows={rows}
         header={header}
         onRefresh={screen.refetch}
-        empty={view.total === 0 ? { title: t.emptyListTitle, body: t.emptyListBody } : undefined}
+        // The island's left plate is Back on this route, so the empty state has
+        // to carry its own way to add — there is no + here to point at.
+        empty={
+          view.total === 0
+            ? { title: t.emptyListTitle, body: t.emptyListBody, action: { label: t.emptyListAction, onPress: screen.addHere } }
+            : undefined
+        }
       />
     </ScreenFrame>
   );
