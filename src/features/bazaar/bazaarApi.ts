@@ -143,6 +143,13 @@ export async function fetchFriends(userId: string): Promise<Person[]> {
   return fetchPeople((data as { friend_id: string }[]).map((row) => row.friend_id));
 }
 
+/** The usuals I asked never to be offered again, by `Usual.key`. */
+export async function fetchHiddenUsuals(userId: string): Promise<string[]> {
+  const { data, error } = await supabase.from('bazaar_hidden_usuals').select('usual_key').eq('user_id', userId);
+  if (error) throw error;
+  return (data as { usual_key: string }[]).map((row) => row.usual_key);
+}
+
 export async function fetchSettings(userId: string, locale: string | null): Promise<BazaarSettings> {
   const { data, error } = await supabase
     .from('bazaar_settings')
@@ -245,6 +252,39 @@ export async function removeMember(listId: string, userId: string): Promise<void
 
 export async function leaveList(listId: string, userId: string): Promise<void> {
   const { error } = await supabase.from('bazaar_list_members').delete().eq('list_id', listId).eq('user_id', userId);
+  if (error) throw error;
+}
+
+/** Finished trips and everything they carried. Resolves to how many it actually took. */
+export async function deleteTrips(ids: string[]): Promise<number> {
+  if (ids.length === 0) return 0;
+  const { data, error } = await supabase.rpc('bazaar_delete_trips', { p_trips: ids });
+  if (error) throw error;
+  return (data as number | null) ?? 0;
+}
+
+export async function clearActivity(listId: string): Promise<void> {
+  const { error } = await supabase.rpc('bazaar_clear_activity', { p_list: listId });
+  if (error) throw error;
+}
+
+export async function deleteMyData(): Promise<void> {
+  const { error } = await supabase.rpc('bazaar_delete_my_data');
+  if (error) throw error;
+}
+
+export async function hideUsual(userId: string, key: string): Promise<void> {
+  const { error } = await supabase
+    .from('bazaar_hidden_usuals')
+    .upsert({ user_id: userId, usual_key: key }, { onConflict: 'user_id,usual_key' });
+  if (error) throw error;
+}
+
+/** Show hidden usuals again: the given keys, or all of mine. */
+export async function showUsuals(userId: string, keys?: string[]): Promise<void> {
+  let query = supabase.from('bazaar_hidden_usuals').delete().eq('user_id', userId);
+  if (keys) query = query.in('usual_key', keys);
+  const { error } = await query;
   if (error) throw error;
 }
 

@@ -1,6 +1,6 @@
 import type { Trip } from '@/types/bazaar';
 
-import { finishedTrips, historySections, tripMeta } from './trips';
+import { deletableTrips, finishedTrips, historySections, tripMeta } from './trips';
 import { clock, dayLabel, relative, startOfWeek } from './when';
 
 function trip(id: string, ended: string | null, over: Partial<Trip> = {}): Trip {
@@ -73,5 +73,29 @@ describe('when', () => {
     expect(relative(at(3 * 86_400_000), NOW, 'en')).toBe('3d ago');
     expect(relative(at(30 * 86_400_000), NOW, 'en')).toMatch(/^\w+ \d+$/);
     expect(relative(at(12 * 60_000), NOW, 'pl')).toBe('12 min temu');
+  });
+});
+
+describe('deletableTrips', () => {
+  const mine = trip('mine', '2026-09-23T18:00:00', { shopperId: 'me', listId: 'theirs' });
+  const onMyList = trip('on-my-list', '2026-09-22T18:00:00', { shopperId: 'marta', listId: 'home' });
+  const hers = trip('hers', '2026-09-21T18:00:00', { shopperId: 'marta', listId: 'theirs' });
+  const open = trip('open', null, { shopperId: 'me', listId: 'home' });
+  const all = [mine, onMyList, hers, open];
+
+  it('is the trips I shopped, and every trip on a list I own', () => {
+    expect(deletableTrips(all, 'me', new Set(['home'])).map((t) => t.id)).toEqual(['mine', 'on-my-list']);
+  });
+
+  it('is only my own trips when I own nothing', () => {
+    expect(deletableTrips(all, 'me', new Set()).map((t) => t.id)).toEqual(['mine']);
+  });
+
+  it('never includes a trip still in progress', () => {
+    expect(deletableTrips([open], 'me', new Set(['home']))).toEqual([]);
+  });
+
+  it('is nothing before anyone is signed in', () => {
+    expect(deletableTrips(all, null, new Set(['home']))).toEqual([]);
   });
 });

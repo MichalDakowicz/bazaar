@@ -25,6 +25,7 @@ export type Usual = {
 };
 
 const DAY = 24 * 60 * 60_000;
+const NO_HIDDEN: ReadonlySet<string> = new Set();
 /** Bought this recently counts double: what you buy now is what you will buy next. */
 const RECENT_DAYS = 45;
 
@@ -32,7 +33,17 @@ function keyOf(item: ListItem): string {
   return `${item.productId ?? `x:${item.nameEn.toLowerCase()}`}|${item.opt.toLowerCase()}`;
 }
 
-export function buildUsuals(history: readonly ListItem[], now: number, limit = 6): Usual[] {
+/**
+ * `hidden` is the keys the person asked never to be offered again. They are
+ * dropped before the cut, so hiding one lets the next-best usual take its place
+ * rather than leaving the shelf a tile short.
+ */
+export function buildUsuals(
+  history: readonly ListItem[],
+  now: number,
+  limit = 6,
+  hidden: ReadonlySet<string> = NO_HIDDEN,
+): Usual[] {
   const groups = new Map<string, { sample: ListItem; count: number; score: number; lastAt: string }>();
   for (const item of history) {
     const key = keyOf(item);
@@ -53,7 +64,7 @@ export function buildUsuals(history: readonly ListItem[], now: number, limit = 6
   }
 
   return [...groups.entries()]
-    .filter(([, group]) => group.count >= 2)
+    .filter(([key, group]) => group.count >= 2 && !hidden.has(key))
     .sort(([, a], [, b]) => b.score - a.score || b.lastAt.localeCompare(a.lastAt))
     .slice(0, limit)
     .map(([key, { sample, count, lastAt }]) => ({

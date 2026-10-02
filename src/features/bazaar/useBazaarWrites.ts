@@ -24,7 +24,7 @@ export function useBazaarWrites() {
   const uid = user?.id;
 
   const touch = useCallback(
-    (...scopes: ('lists' | 'items' | 'trips' | 'activity' | 'history' | 'people')[]) => {
+    (...scopes: ('lists' | 'items' | 'trips' | 'activity' | 'history' | 'people' | 'hiddenUsuals')[]) => {
       for (const scope of scopes) {
         void client.invalidateQueries({ queryKey: ['bazaar', scope] });
       }
@@ -114,6 +114,12 @@ export function useBazaarWrites() {
           touch('items', 'activity');
           return true;
         }),
+      updateItem: (itemId: string, patch: { qty?: string; opt?: string }) =>
+        attempt(async () => {
+          await api.patchItem(itemId, patch);
+          touch('items');
+          return true;
+        }),
       changeQty: (itemId: string, qty: string) =>
         attempt(async () => {
           await api.patchItem(itemId, { qty });
@@ -141,6 +147,39 @@ export function useBazaarWrites() {
           const ids = await api.reuseTrip(tripId, listId);
           touch('items', 'activity', 'history');
           return ids;
+        }),
+
+      // history, feed and the account's own data
+      removeTrips: (tripIds: string[]) =>
+        attempt(async () => {
+          const taken = await api.deleteTrips(tripIds);
+          touch('trips', 'items', 'activity', 'history');
+          return taken;
+        }),
+      clearActivity: (listId: string) =>
+        attempt(async () => {
+          await api.clearActivity(listId);
+          touch('activity');
+          return true;
+        }),
+      deleteMyData: () =>
+        attempt(async () => {
+          await api.deleteMyData();
+          touch('lists', 'items', 'trips', 'activity', 'history', 'people', 'hiddenUsuals');
+          void client.invalidateQueries({ queryKey: bazaarKeys.settings(uid) });
+          return true;
+        }),
+      hideUsual: (key: string) =>
+        attempt(async () => {
+          await api.hideUsual(uid!, key);
+          touch('hiddenUsuals');
+          return true;
+        }),
+      showUsuals: (keys?: string[]) =>
+        attempt(async () => {
+          await api.showUsuals(uid!, keys);
+          touch('hiddenUsuals');
+          return true;
         }),
 
       // people

@@ -16,6 +16,16 @@ export function finishedTrips(trips: readonly Trip[]): Trip[] {
     .sort((a, b) => (b.endedAt ?? '').localeCompare(a.endedAt ?? ''));
 }
 
+/**
+ * The finished trips this person may delete: the ones they shopped, and every
+ * trip on a list they own. Mirrors `bazaar_delete_trips`, which is the one that
+ * decides — this only keeps the screen from offering what the server would skip.
+ */
+export function deletableTrips(trips: readonly Trip[], me: string | null, ownedListIds: ReadonlySet<string>): Trip[] {
+  if (!me) return [];
+  return finishedTrips(trips).filter((trip) => trip.shopperId === me || ownedListIds.has(trip.listId));
+}
+
 export function historySections(trips: readonly Trip[], now: number, lang: Lang): HistorySection[] {
   const t = strings(lang);
   const weekStart = startOfWeek(now);

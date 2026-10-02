@@ -38,7 +38,12 @@ export type SheetRequest =
   | { kind: 'editList'; listId: string }
   | { kind: 'people' }
   | { kind: 'recipe' }
-  | { kind: 'finish'; listId: string; tripId: string };
+  | { kind: 'finish'; listId: string; tripId: string }
+  | { kind: 'item'; itemId: string }
+  | { kind: 'trip'; tripId: string }
+  | { kind: 'hideUsual'; key: string; name: string }
+  | { kind: 'clearHistory' }
+  | { kind: 'deleteData' };
 
 type UiState = {
   sheet: SheetRequest | null;

@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { useAuth } from '@/features/auth/AuthProvider';
 import {
   fetchActivity,
+  fetchHiddenUsuals,
   fetchLiveItems,
   fetchLists,
   fetchPeople,
@@ -34,6 +35,7 @@ export const bazaarKeys = {
   history: (uid: string | undefined) => ['bazaar', 'history', uid] as const,
   tripItems: (tripId: string) => ['bazaar', 'tripItems', tripId] as const,
   settings: (uid: string | undefined) => ['bazaar', 'settings', uid] as const,
+  hiddenUsuals: (uid: string | undefined) => ['bazaar', 'hiddenUsuals', uid] as const,
 };
 
 const NO_LISTS: BazaarList[] = [];
@@ -41,6 +43,7 @@ const NO_ITEMS: ListItem[] = [];
 const NO_TRIPS: Trip[] = [];
 const NO_ACTIVITY: Activity[] = [];
 const NO_PEOPLE: Person[] = [];
+const NO_KEYS: ReadonlySet<string> = new Set();
 
 export type Workspace = {
   me: string | null;
@@ -177,4 +180,21 @@ export function usePurchaseHistory(): ListItem[] {
     staleTime: 10 * 60 * 1000,
   });
   return query.data ?? NO_ITEMS;
+}
+
+/**
+ * The usuals I hid. A client that has not run the latest schema has no such
+ * table; that is an empty set here, not an error screen — the shelf just shows
+ * everything, and hiding says so when it is tried.
+ */
+export function useHiddenUsuals(): ReadonlySet<string> {
+  const { user } = useAuth();
+  const query = useQuery({
+    queryKey: bazaarKeys.hiddenUsuals(user?.id),
+    queryFn: () => fetchHiddenUsuals(user!.id).catch(() => [] as string[]),
+    enabled: !!user,
+    staleTime: 10 * 60 * 1000,
+  });
+  const keys = query.data;
+  return useMemo(() => (keys && keys.length > 0 ? new Set(keys) : NO_KEYS), [keys]);
 }
