@@ -10,6 +10,7 @@ import { QrLoginControl } from '@/features/auth/qr/QrLoginControl';
 import { useBazaarSettings, useLang } from '@/features/bazaar/useBazaarSettings';
 import { Avatar } from '@/features/friends/Avatar';
 import { AlwaysHomeEditor } from '@/features/settings/AlwaysHomeEditor';
+import { DataControls } from '@/features/settings/DataControls';
 import { AppUpdateControl } from '@/features/settings/AppUpdateControl';
 import { useSettingsCopy } from '@/features/settings/copy';
 import { SignOutSheet } from '@/features/settings/SignOutSheet';
@@ -106,6 +107,10 @@ export function SettingsScreen() {
               ]}
             />
             <Text className="text-xs text-muted-foreground">{copy.themeNote}</Text>
+          </View>
+
+          <View className={['pt-7', gutter].join(' ')}>
+            <DataControls />
           </View>
 
           <View className={['gap-3 pt-7', gutter].join(' ')}>

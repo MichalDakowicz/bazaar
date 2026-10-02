@@ -34,6 +34,7 @@ export function CatalogScreen() {
           trailing: <RoundAction have={tile.have} size={28} />,
           // On the list already: a tick to read, nothing to press.
           onPress: tile.have ? undefined : tile.add,
+          onLongPress: tile.hide,
           accessibilityLabel: tile.have ? tile.name : `${t.add} · ${tile.name}`,
         },
       })),
@@ -49,14 +50,17 @@ export function CatalogScreen() {
           <CatalogSearchEntry placeholder={t.searchPh} onPress={screen.openSearch} />
         </View>
         <View className="mt-[22px]">
-          <CardCarousel
-            cards={cards}
-            heading={
-              <Text className="mb-2.5 px-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                {screen.shelfTitle}
-              </Text>
-            }
-          />
+          {screen.tiles.length > 0 && (
+            <CardCarousel
+              cards={cards}
+              heading={
+                <View className="mb-2.5 flex-row items-baseline justify-between gap-3 px-4">
+                  <Text className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{screen.shelfTitle}</Text>
+                  {screen.shelfHint && <Text className="text-xs text-muted-foreground">{t.holdToHide}</Text>}
+                </View>
+              }
+            />
+          )}
         </View>
         <CategoryGrid title={t.categories} categories={screen.categories} />
       </ScrollView>

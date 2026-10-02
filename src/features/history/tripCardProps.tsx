@@ -8,5 +8,7 @@ export function tripCardProps(trip: TripCardModel): BazaarCardProps {
     title: trip.title,
     subtitle: trip.meta,
     trailing: <ReuseButton title={trip.title} onPress={trip.reuse} />,
+    onPress: trip.open,
+    accessibilityLabel: trip.title,
   };
 }

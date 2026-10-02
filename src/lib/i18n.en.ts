@@ -119,7 +119,7 @@ export const en = {
   justAdded: 'Just added',
   added: (name: string) => `+ ${name}`,
   noListToAdd: 'Make a list first',
-  noListToAddBody: 'Items go on a list. Tap + on the Lists tab to make one.',
+  noListToAddBody: 'Items go on a list. Make one from the Lists tab.',
   pickList: 'Which list?',
 
   // catalog

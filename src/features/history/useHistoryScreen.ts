@@ -1,13 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { useToast } from '@/components/ui/Toast';
-import { useAdder } from '@/features/add/useAdder';
 import { useLang } from '@/features/bazaar/useBazaarSettings';
-import { useBazaarWrites } from '@/features/bazaar/useBazaarWrites';
 import { useWorkspace } from '@/features/bazaar/useWorkspace';
-import { reuseTarget, tripTitle } from '@/features/history/historyModel';
+import { tripTitle } from '@/features/history/historyModel';
+import { useDeletableTrips } from '@/features/history/useDeletableTrips';
+import { useReuseTrip } from '@/features/history/useReuseTrip';
 import { historySections, tripMeta } from '@/lib/trips';
-import type { Trip } from '@/types/bazaar';
+import { useBazaarUi } from '@/store/bazaarPrefs';
 
 export type TripCardModel = {
   id: string;
@@ -16,6 +15,8 @@ export type TripCardModel = {
   /** "Wed 24 · Lidl · Marta · 19 items · 2 skipped" */
   meta: string;
   reuse: () => void;
+  /** Opens the trip: what it carried, Reuse, and Delete. */
+  open: () => void;
 };
 
 export type HistorySectionModel = { key: string; title: string; trips: TripCardModel[] };
@@ -28,30 +29,12 @@ export type HistorySectionModel = { key: string; title: string; trips: TripCardM
 export function useHistoryScreen() {
   const { trips, list: listOf, nameOf, loading, error, refetch } = useWorkspace();
   const { t, appLang } = useLang();
-  const { list: current } = useAdder();
-  const writes = useBazaarWrites();
-  const { say } = useToast();
+  const reuse = useReuseTrip();
+  const openSheet = useBazaarUi((state) => state.open);
+  const deletable = useDeletableTrips();
   // The week's edge only moves on a Monday; a screen left open across one is a
   // pull-to-refresh away from being right.
   const [now] = useState(() => Date.now());
-
-  const reuse = useCallback(
-    async (trip: Trip) => {
-      const target = reuseTarget(listOf(trip.listId), current);
-      if (!target) {
-        say(t.noListToAdd);
-        return;
-      }
-      const ids = await writes.reuseTrip(trip.id, target.id);
-      if (!ids) return;
-      // Undo only when there is something to undo.
-      say(
-        t.reused(ids.length, target.name),
-        ids.length > 0 ? { label: t.undo, onPress: () => void writes.removeItems(ids) } : undefined,
-      );
-    },
-    [listOf, current, writes, say, t],
-  );
 
   const sections = useMemo<HistorySectionModel[]>(
     () =>
@@ -63,14 +46,18 @@ export function useHistoryScreen() {
           title: tripTitle(listOf(trip.listId), trip, appLang),
           meta: tripMeta(trip, nameOf(trip.shopperId) ?? t.you, appLang),
           reuse: () => void reuse(trip),
+          open: () => openSheet({ kind: 'trip', tripId: trip.id }),
         })),
       })),
-    [trips, listOf, nameOf, now, appLang, t, reuse],
+    [trips, listOf, nameOf, now, appLang, t, reuse, openSheet],
   );
 
   return {
     sections,
     empty: sections.length === 0,
+    /** How many trips Delete history would take — 0 hides the control. */
+    deletable: deletable.length,
+    clearHistory: () => openSheet({ kind: 'clearHistory' }),
     loading,
     error,
     refetch,

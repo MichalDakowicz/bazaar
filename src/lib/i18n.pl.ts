@@ -116,7 +116,7 @@ export const pl: Dictionary = {
   justAdded: 'Właśnie dodane',
   added: (name) => `+ ${name}`,
   noListToAdd: 'Najpierw zrób listę',
-  noListToAddBody: 'Produkty trafiają na listę. Dotknij + w zakładce Listy, żeby ją zrobić.',
+  noListToAddBody: 'Produkty trafiają na listę. Zrób ją w zakładce Listy.',
   pickList: 'Którą listę?',
 
   usuals: 'Twoje stałe',

@@ -4,6 +4,7 @@ import { ScreenFrame } from '@/components/layout/ScreenFrame';
 import { ScreenHeading } from '@/components/layout/ScreenHeading';
 import { ScreenTop } from '@/components/layout/ScreenTop';
 import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { ClearHistoryButton } from '@/features/history/ClearHistoryButton';
 import { HistoryGrid } from '@/features/history/HistoryGrid';
 import { HistoryList } from '@/features/history/HistoryList';
 import { useHistoryScreen } from '@/features/history/useHistoryScreen';
@@ -25,7 +26,10 @@ export function HistoryScreen() {
         <HistoryGrid screen={screen} />
       ) : (
         <>
-          <ScreenHeading title={t.history} />
+          <ScreenHeading
+            title={t.history}
+            right={screen.deletable > 0 ? <ClearHistoryButton onPress={screen.clearHistory} /> : undefined}
+          />
           <View className="h-4" />
           <HistoryList screen={screen} />
         </>

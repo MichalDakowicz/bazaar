@@ -1,7 +1,12 @@
+import { HideUsualSheet } from '@/features/catalog/HideUsualSheet';
+import { ClearHistorySheet } from '@/features/history/ClearHistorySheet';
+import { TripSheet } from '@/features/history/TripSheet';
 import { FinishSheet } from '@/features/sheets/FinishSheet';
+import { ItemSheet } from '@/features/sheets/ItemSheet';
 import { ListSheet } from '@/features/sheets/ListSheet';
 import { PeopleSheet } from '@/features/household/PeopleSheet';
 import { RecipeDialog } from '@/features/recipe/RecipeDialog';
+import { DeleteDataSheet } from '@/features/settings/DeleteDataSheet';
 import { useBazaarUi } from '@/store/bazaarPrefs';
 
 /**
@@ -24,12 +29,21 @@ export function BazaarSheets() {
         listId={sheet?.kind === 'editList' ? sheet.listId : null}
         onClose={close}
       />
+      <ItemSheet open={sheet?.kind === 'item'} itemId={sheet?.kind === 'item' ? sheet.itemId : null} onClose={close} />
       <FinishSheet
         open={sheet?.kind === 'finish'}
         listId={sheet?.kind === 'finish' ? sheet.listId : null}
         tripId={sheet?.kind === 'finish' ? sheet.tripId : null}
         onClose={close}
       />
+      <TripSheet open={sheet?.kind === 'trip'} tripId={sheet?.kind === 'trip' ? sheet.tripId : null} onClose={close} />
+      <ClearHistorySheet open={sheet?.kind === 'clearHistory'} onClose={close} />
+      <HideUsualSheet
+        open={sheet?.kind === 'hideUsual'}
+        usual={sheet?.kind === 'hideUsual' ? { key: sheet.key, name: sheet.name } : null}
+        onClose={close}
+      />
+      <DeleteDataSheet open={sheet?.kind === 'deleteData'} onClose={close} />
       <PeopleSheet open={sheet?.kind === 'people'} onClose={close} />
       <RecipeDialog open={sheet?.kind === 'recipe'} onClose={close} />
     </>

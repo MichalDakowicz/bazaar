@@ -14,6 +14,10 @@
 - Recipe: paste a recipe and see what the list already covers, what needs more and what is new
 - Household: add a friend to a list and see what they add, live
 - Household: when someone starts shopping, watch their progress and add last-minute items
+- Lists: edit, archive, empty or delete a list from its ⋯, and restore archived ones
+- List: change an item's amount or remove it from its ⋯, with Undo
 - History: every finished trip, with Reuse
+- History: open a trip to see what it carried, delete it, or delete all your history
+- Settings: hide a usual you never want offered, or delete all your Bazaar data
 - Settings: app language and product-name language, swipe to check, notices, theme
 - Sign-in: continue with a Ping app already signed in on this phone, or scan a QR code

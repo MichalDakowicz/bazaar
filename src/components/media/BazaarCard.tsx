@@ -39,6 +39,8 @@ export type BazaarCardProps = {
   /** How many lines the title may take. One, except for prose like a feed sentence. */
   titleLines?: number;
   onPress?: () => void;
+  /** The same card's second thing to do — hold it. A card with only this is still pressable. */
+  onLongPress?: () => void;
   accessibilityLabel?: string;
 };
 
@@ -54,6 +56,7 @@ function BazaarCardBase({
   strong = true,
   titleLines = 1,
   onPress,
+  onLongPress,
   accessibilityLabel,
 }: BazaarCardProps) {
   const { hovered, bind } = useHover();
@@ -109,7 +112,7 @@ function BazaarCardBase({
     variant === 'tile' ? 'w-[124px] rounded-xl p-3' : ['gap-2.5 rounded-xl', dense ? 'px-3 py-2.5' : 'p-3'].join(' '),
   ].join(' ');
 
-  if (!onPress) {
+  if (!onPress && !onLongPress) {
     return (
       <View className={className} style={hover}>
         {body}
@@ -123,6 +126,8 @@ function BazaarCardBase({
       accessibilityLabel={accessibilityLabel ?? title}
       accessibilityState={{ selected }}
       onPress={onPress}
+      onLongPress={onLongPress}
+      delayLongPress={onLongPress ? 400 : undefined}
       {...bind}
       style={[webTransition('background-color'), hover]}
       className={[className, 'active:opacity-80'].join(' ')}

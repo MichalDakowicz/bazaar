@@ -5,6 +5,7 @@ import { ScreenHeading } from '@/components/layout/ScreenHeading';
 import { BazaarCard } from '@/components/media/BazaarCard';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/states';
 import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { ClearHistoryButton } from '@/features/history/ClearHistoryButton';
 import { HistorySectionTitle } from '@/features/history/HistorySectionTitle';
 import { tripCardProps } from '@/features/history/tripCardProps';
 import type { useHistoryScreen } from '@/features/history/useHistoryScreen';
@@ -43,7 +44,10 @@ export function HistoryGrid({ screen }: { screen: ReturnType<typeof useHistorySc
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: navBarSpace }}>
       <ContentShell maxWidth={MAX_W.detail}>
-        <ScreenHeading title={t.history} />
+        <ScreenHeading
+          title={t.history}
+          right={screen.deletable > 0 ? <ClearHistoryButton onPress={screen.clearHistory} /> : undefined}
+        />
         {body}
       </ContentShell>
     </ScrollView>
