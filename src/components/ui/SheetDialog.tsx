@@ -4,6 +4,7 @@ import { Modal, Platform, Pressable, ScrollView, Text, useWindowDimensions, View
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { MAX_W, useIsDesktop } from '@/hooks/useResponsive';
 import { COLORS } from '@/theme/colors';
 
@@ -65,6 +66,7 @@ export function SheetDialog({
   const insets = useSafeAreaInsets();
   const isDesktop = useIsDesktop();
   const { height: windowHeight } = useWindowDimensions();
+  const keyboard = useKeyboardHeight();
   const close = onRequestClose ?? onDismiss;
 
   // Escape closes it on web, where a sheet with no visible close affordance is
@@ -181,7 +183,10 @@ export function SheetDialog({
         accessibilityRole="button"
         accessibilityLabel="close"
         onPress={close}
-        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' }}
+        // A Modal is its own window and the keyboard does not resize it, so the
+        // sheet is lifted by hand — otherwise a field near the top of a tall
+        // sheet is typed into blind and the confirm button sits under the keys.
+        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end', paddingBottom: keyboard }}
       >
         {/* The sheet swallows its own taps so a press inside does not dismiss. */}
         <Pressable onPress={() => {}} accessible={false}>
@@ -190,7 +195,7 @@ export function SheetDialog({
                 view, or the sheet is transparent on web. */}
             <View
               className="rounded-t-[20px] border-t border-border bg-popover px-6 pt-5"
-              style={{ paddingBottom: insets.bottom + 24 }}
+              style={{ paddingBottom: (keyboard > 0 ? 0 : insets.bottom) + 24 }}
             >
               <View className="mx-auto mb-4 h-1 w-9 rounded-full bg-border" />
               {heading}
