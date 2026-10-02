@@ -566,6 +566,108 @@ revoke all on function public.bazaar_remove_member(uuid, uuid) from public;
 grant execute on function public.bazaar_remove_member(uuid, uuid) to authenticated;
 
 -- ============================================================================
+-- Taking things back — nothing in Bazaar stays unless its owner wants it
+--
+-- Lists, items and leaving a list are plain deletes under the policies above.
+-- What a client cannot do directly is below: History (trips and the items they
+-- carried — deleting a *trip row* would set trip_id null and put every item
+-- back on the live list, so it has to be one function), the feed (read-only to
+-- clients on purpose), and "all of it" in one transaction.
+-- ============================================================================
+
+-- A usual you never want offered again. Keyed the way the client keys a usual
+-- (`<product id or x:name>|<options>`); the usual itself is still derived, only
+-- the refusal is stored. Its own table rather than a column on bazaar_settings,
+-- so a client that has not run this file yet loses this one query and not the
+-- language and swipe settings with it.
+create table if not exists public.bazaar_hidden_usuals (
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  usual_key  text not null,
+  created_at timestamptz not null default now(),
+  primary key (user_id, usual_key)
+);
+
+alter table public.bazaar_hidden_usuals enable row level security;
+
+drop policy if exists bazaar_hidden_usuals_owner_all on public.bazaar_hidden_usuals;
+create policy bazaar_hidden_usuals_owner_all on public.bazaar_hidden_usuals for all
+  to authenticated using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+
+-- Delete finished trips, with the items they carried and the feed lines that name
+-- either. The person who shopped may, and so may the owner of the list; an open
+-- trip is not history yet and is never touched. Trips you may not delete are
+-- skipped rather than failing the batch — "clear my history" is one tap over
+-- many rows, and the count says how many it really took.
+create or replace function public.bazaar_delete_trips(p_trips uuid[])
+returns int
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_ids uuid[];
+begin
+  select coalesce(array_agg(t.id), '{}'::uuid[]) into v_ids
+  from public.bazaar_trips t
+  where t.id = any(p_trips)
+    and t.ended_at is not null
+    and private.bazaar_on_list(t.list_id)
+    and (t.shopper_id = auth.uid() or private.bazaar_owns_list(t.list_id));
+
+  -- Feed first: the item ids it names are read off the items about to go.
+  delete from public.bazaar_activity a
+  where a.detail ->> 'trip_id' in (select x::text from unnest(v_ids) x)
+     or a.detail ->> 'item_id' in (select i.id::text from public.bazaar_items i where i.trip_id = any(v_ids));
+  delete from public.bazaar_items where trip_id = any(v_ids);
+  delete from public.bazaar_trips where id = any(v_ids);
+
+  return coalesce(array_length(v_ids, 1), 0);
+end;
+$$;
+revoke all on function public.bazaar_delete_trips(uuid[]) from public;
+grant execute on function public.bazaar_delete_trips(uuid[]) to authenticated;
+
+-- Empty a list's feed. Owner only: the feed is what everyone on the list sees,
+-- so one member wiping it would be rewriting the others' history.
+create or replace function public.bazaar_clear_activity(p_list uuid)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not private.bazaar_owns_list(p_list) then
+    raise exception 'Only the owner of a list can clear its activity.';
+  end if;
+  delete from public.bazaar_activity where list_id = p_list;
+end;
+$$;
+revoke all on function public.bazaar_clear_activity(uuid) from public;
+grant execute on function public.bazaar_clear_activity(uuid) to authenticated;
+
+-- Everything Bazaar holds about the caller, in one transaction: the lists they
+-- own (and with them the items, trips, feed and members), their place on every
+-- list they were only a guest on, the usuals they hid, and their settings. What
+-- they put on somebody else's list stays on it — it is that list's, and the
+-- people still on it are still shopping from it. The account itself is Radar's.
+create or replace function public.bazaar_delete_my_data()
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  delete from public.bazaar_lists where owner_id = auth.uid();
+  delete from public.bazaar_list_members where user_id = auth.uid();
+  delete from public.bazaar_hidden_usuals where user_id = auth.uid();
+  delete from public.bazaar_settings where user_id = auth.uid();
+end;
+$$;
+revoke all on function public.bazaar_delete_my_data() from public;
+grant execute on function public.bazaar_delete_my_data() to authenticated;
+
+-- ============================================================================
 -- Realtime
 --
 -- The tabs subscribe to the rows of the lists they are on, so an item added on

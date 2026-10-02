@@ -40,7 +40,7 @@ Bazaar only lets you put one onto a list.
 
 ## What Bazaar owns
 
-Six tables, all namespaced, all with RLS:
+Seven tables, all namespaced, all with RLS:
 
 | Table | Holds |
 | --- | --- |
@@ -50,6 +50,7 @@ Six tables, all namespaced, all with RLS:
 | `bazaar_trips` | one person in a shop with a list. `ended_at is null` means they are there now |
 | `bazaar_activity` | the household feed. Written only by triggers, never by a client |
 | `bazaar_settings` | Bazaar-only preferences: the two languages, swipe, notices, "always at home" |
+| `bazaar_hidden_usuals` | the usuals the owner never wants offered again — only the refusal is stored, the usual is derived |
 
 ## Bazaar is shared, but not public
 
@@ -119,6 +120,19 @@ editing the `create table`, which is skipped entirely on a live database.
   The confirm says so. Archiving (`archived_at`) is the strongest thing short of that.
 - Deleting a **user** cascades to their lists and memberships; items they added to someone
   else's list stay (`added_by` is set null).
+- Deleting a finished **trip** is `bazaar_delete_trips(uuid[])`, never a row delete: the
+  items carry `trip_id` with `on delete set null`, so deleting only the trip would put every
+  item it bought back on the live list. The function takes the items and the feed lines that
+  name either, and skips what the caller may not delete (the shopper or the list's owner may;
+  an open trip never). It returns how many it took, so "clear my history" is one call.
+- Clearing a list's **feed** is `bazaar_clear_activity(list)`, owner only. Clients still have
+  no write access to `bazaar_activity`; the feed is what everyone on the list sees.
+- **Delete my Bazaar data** is `bazaar_delete_my_data()`: the lists the caller owns, their
+  place on every other list, their hidden usuals and their settings, in one transaction.
+  What they put on somebody else's list stays on it, and the account is Radar's.
+- A client that has not run the latest `schema.sql` loses only the features that need it:
+  hidden usuals is its own table so settings still load, and the three functions above fail
+  with a toast instead of taking a screen down.
 
 ## Signing in from a sibling
 
