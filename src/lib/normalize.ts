@@ -48,7 +48,8 @@ export function normalizeItem(row: ItemRow): ListItem {
     addedBy: row.added_by,
     tripId: row.trip_id,
     productId: row.product_id,
-    cat: categoryOf(row.cat).key,
+    // Earlier builds put every custom item in pantry; keep those under Other too.
+    cat: categoryOf(row.product_id === null && row.cat === 'pantry' ? 'other' : row.cat).key,
     // A custom item typed in one language is the same word in the other until
     // somebody says otherwise; a blank name would render as an empty row.
     nameEn: nameEn || namePl,

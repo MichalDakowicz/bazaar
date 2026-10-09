@@ -23,7 +23,7 @@ export function CategoryScreen() {
   const { key } = useLocalSearchParams<{ key: string }>();
   const { t } = useLang();
   const gutter = useGutter();
-  // `categoryOf` files an unknown section under pantry so the hooks always have
+  // `categoryOf` files an unknown section under Other so the hooks always have
   // one; the redirect below keeps a mistyped link from showing the wrong shelf.
   const screen = useCategoryScreen(categoryOf(key).key);
 

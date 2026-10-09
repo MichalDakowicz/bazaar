@@ -68,7 +68,7 @@ export function useCatalogScreen() {
 
   const categories = useMemo<CategoryTile[]>(
     () =>
-      CATEGORIES.map(({ key }) => {
+      CATEGORIES.filter(({ key }) => (CATEGORY_COUNTS[key] ?? 0) > 0).map(({ key }) => {
         const count = CATEGORY_COUNTS[key] ?? 0;
         return {
           key,

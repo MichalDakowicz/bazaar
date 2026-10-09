@@ -31,9 +31,15 @@ describe('normalizeItem', () => {
     expect(normalizeItem(itemRow)).toMatchObject({ nameEn: 'Milk', namePl: 'Mleko', cat: 'dairy', qty: '2 L', tripId: null });
   });
 
-  it('files an unknown section under pantry instead of dropping the row', () => {
-    expect(normalizeItem({ ...itemRow, cat: 'garden' }).cat).toBe('pantry');
-    expect(normalizeItem({ ...itemRow, cat: null }).cat).toBe('pantry');
+  it('files an unknown section under Other instead of dropping the row', () => {
+    expect(normalizeItem({ ...itemRow, cat: 'garden' }).cat).toBe('other');
+    expect(normalizeItem({ ...itemRow, cat: null }).cat).toBe('other');
+  });
+
+  it('repairs old custom pantry items while preserving catalogue and explicit categories', () => {
+    expect(normalizeItem({ ...itemRow, product_id: null, cat: 'pantry' }).cat).toBe('other');
+    expect(normalizeItem({ ...itemRow, product_id: 'flour', cat: 'pantry' }).cat).toBe('pantry');
+    expect(normalizeItem({ ...itemRow, product_id: null, cat: 'home' }).cat).toBe('home');
   });
 
   it('mirrors a name that is missing in one language', () => {

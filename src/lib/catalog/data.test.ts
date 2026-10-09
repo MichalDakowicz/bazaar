@@ -9,7 +9,7 @@ import { MEAT } from './meat';
 import { PANTRY } from './pantry';
 import { PRODUCE } from './produce';
 import { SNACKS } from './snacks';
-import { CATEGORY_ORDER, type CatalogEntry, type CategoryKey } from './types';
+import { CATALOG_CATEGORY_ORDER as CATEGORY_ORDER, type CatalogEntry, type CatalogCategoryKey as CategoryKey } from './types';
 
 const CATALOG: Record<CategoryKey, readonly CatalogEntry[]> = {
   produce: PRODUCE,

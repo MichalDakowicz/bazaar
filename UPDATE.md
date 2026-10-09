@@ -2,6 +2,10 @@
 
 ## 0.2.0 — Unreleased
 
+### Fixed
+
+- Add, Web and Recipe: custom items appear under Other / Inne, including older pantry entries
+
 ## 0.1.0 — 2026-10-03
 
 ### Added

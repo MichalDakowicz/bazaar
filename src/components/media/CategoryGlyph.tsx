@@ -1,4 +1,4 @@
-import { Apple, Beef, Container, Cookie, Croissant, Fish, GlassWater, Milk, Snowflake, SprayCan } from 'lucide-react-native';
+import { Apple, Beef, Container, Cookie, Croissant, Fish, GlassWater, Milk, Package, Snowflake, SprayCan } from 'lucide-react-native';
 
 import type { CategoryGlyphKey } from '@/lib/categories';
 
@@ -40,5 +40,7 @@ export function CategoryGlyph({
       return <Cookie {...props} />;
     case 'spray':
       return <SprayCan {...props} />;
+    case 'box':
+      return <Package {...props} />;
   }
 }

@@ -11,6 +11,7 @@ import { usePlannerList } from '@/features/planner/usePlannerList';
 import { usePlannerShortcuts } from '@/features/planner/usePlannerShortcuts';
 import { SIDEBAR_WIDTH } from '@/hooks/useResponsive';
 import { categoryAlt, categoryName } from '@/lib/categories';
+import { customItem } from '@/lib/customItem';
 import { optionSetFor } from '@/lib/optionSets';
 import { pick, resolveOptions, type OptionValue, type Picked, type ResolvedGroup } from '@/lib/options';
 import {
@@ -193,7 +194,9 @@ export function usePlanner() {
     more: hidden > 0 ? { label: copy.showMore(Math.min(hidden, PAGE_SIZE)), onPress: () => setShown((current) => current + PAGE_SIZE) } : null,
     nothingFor: search.noResults ? typed : null,
     addTyped: () => {
-      void record({ productId: null, cat: 'pantry', nameEn: typed, namePl: typed, opt: '', qty: '1' });
+      const item = customItem(typed);
+      if (!item) return;
+      void record(item);
       changeQuery('');
     },
 

@@ -1,9 +1,9 @@
 /**
- * The ten shop sections, in the order a shop (and so the list) walks them.
+ * The ten catalogue sections, in the order a shop walks them.
  * The key is stored on every item row, so it is a contract: adding a section
  * is a migration-free change, renaming one is not.
  */
-export const CATEGORY_ORDER = [
+export const CATALOG_CATEGORY_ORDER = [
   'produce',
   'bakery',
   'dairy',
@@ -16,6 +16,10 @@ export const CATEGORY_ORDER = [
   'home',
 ] as const;
 
+/** Custom items follow the catalogue sections on a shopping list. */
+export const CATEGORY_ORDER = [...CATALOG_CATEGORY_ORDER, 'other'] as const;
+
+export type CatalogCategoryKey = (typeof CATALOG_CATEGORY_ORDER)[number];
 export type CategoryKey = (typeof CATEGORY_ORDER)[number];
 
 /**

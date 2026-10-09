@@ -15,6 +15,7 @@ import { useProductSearch } from '@/features/add/useProductSearch';
 import { useLang } from '@/features/bazaar/useBazaarSettings';
 import { useNavBarSpace } from '@/hooks/useNavBarSpace';
 import { categoryName } from '@/lib/categories';
+import { customItem } from '@/lib/customItem';
 import { optionSetFor } from '@/lib/optionSets';
 import { productAlt, productName } from '@/lib/search';
 import { productToItem } from '@/lib/usuals';
@@ -140,8 +141,9 @@ export function AddScreen() {
               accessibilityRole="button"
               accessibilityLabel={`${t.addOwn} ${search.query.trim()}`}
               onPress={() => {
-                const text = search.query.trim();
-                void add({ productId: null, cat: 'pantry', nameEn: text, namePl: text, opt: '', qty: '1' });
+                const item = customItem(search.query);
+                if (!item) return;
+                void add(item);
                 search.setQuery('');
               }}
               className="mt-2 rounded-full bg-secondary px-4 py-2 active:opacity-80"
