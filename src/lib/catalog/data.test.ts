@@ -5,6 +5,11 @@ import { DRINKS } from './drinks';
 import { FISH } from './fish';
 import { FROZEN } from './frozen';
 import { HOME } from './home';
+import { GYM } from './gym';
+import { CLOTHING } from './clothing';
+import { HOUSEHOLD } from './household';
+import { MEDICINE } from './medicine';
+import { SUPPLEMENTS } from './supplements';
 import { MEAT } from './meat';
 import { PANTRY } from './pantry';
 import { PRODUCE } from './produce';
@@ -22,6 +27,11 @@ const CATALOG: Record<CategoryKey, readonly CatalogEntry[]> = {
   drinks: DRINKS,
   snacks: SNACKS,
   home: HOME,
+  gym: GYM,
+  clothing: CLOTHING,
+  household: HOUSEHOLD,
+  medicine: MEDICINE,
+  supplements: SUPPLEMENTS,
 };
 
 const MINIMUM: Record<CategoryKey, number> = {
@@ -35,12 +45,17 @@ const MINIMUM: Record<CategoryKey, number> = {
   drinks: 70,
   snacks: 60,
   home: 80,
+  gym: 25,
+  clothing: 25,
+  household: 25,
+  medicine: 20,
+  supplements: 20,
 };
 
 const REQUIRED = required as Record<CategoryKey, [string, string][]>;
 
 /** Words allowed to carry capitals mid-name: acronyms and proper nouns. */
-const CAPITALS_OK = new Set(['UHT', 'BBQ', 'LED', 'AA', 'AAA', 'WC', 'Grey']);
+const CAPITALS_OK = new Set(['UHT', 'BBQ', 'LED', 'AA', 'AAA', 'WC', 'Grey', 'D3', 'C', 'B12']);
 
 /** Lowercase, strip diacritics (ł has no decomposition, so by hand). */
 function fold(text: string): string {
@@ -68,7 +83,7 @@ const ALL = CATEGORY_ORDER.flatMap((category) =>
 );
 
 describe('catalogue data', () => {
-  it('has all ten categories', () => {
+  it('has every catalogue category', () => {
     expect(Object.keys(CATALOG)).toEqual([...CATEGORY_ORDER]);
     expect(Object.keys(REQUIRED).sort()).toEqual([...CATEGORY_ORDER].sort());
   });

@@ -93,7 +93,7 @@ export function usePlanner() {
   const { searching, section, cells } = usePlannerCells({ search, catalogCat, shown, listName: list?.name ?? '', onList });
 
   const openCell = useMemo(() => {
-    if (open === 'auto') return searching ? (cells.find((cell) => cell.hasOptions) ?? null) : null;
+    if (open === 'auto') return searching && cells[0]?.hasOptions ? cells[0] : null;
     return open ? (cells.find((cell) => cell.id === open && cell.hasOptions) ?? null) : null;
   }, [open, searching, cells]);
 

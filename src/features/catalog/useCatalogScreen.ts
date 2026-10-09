@@ -26,7 +26,7 @@ export type UsualTile = {
 
 /**
  * The Catalog tab on a phone: what you keep buying, one tap from the list, and
- * the ten sections to browse. A household with no history yet is offered a few
+ * the catalogue sections to browse. A household with no history yet is offered a few
  * starters under a different heading, so the shelf is never an empty promise.
  */
 export function useCatalogScreen() {

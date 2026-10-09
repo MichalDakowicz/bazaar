@@ -1,4 +1,4 @@
-import { Apple, Beef, Container, Cookie, Croissant, Fish, GlassWater, Milk, Package, Snowflake, SprayCan } from 'lucide-react-native';
+import { Apple, Beef, Container, Cookie, Croissant, Dumbbell, Fish, GlassWater, House, Milk, Package, Pill, Shirt, Snowflake, SprayCan, Stethoscope } from 'lucide-react-native';
 
 import type { CategoryGlyphKey } from '@/lib/categories';
 
@@ -42,5 +42,15 @@ export function CategoryGlyph({
       return <SprayCan {...props} />;
     case 'box':
       return <Package {...props} />;
+    case 'dumbbell':
+      return <Dumbbell {...props} />;
+    case 'shirt':
+      return <Shirt {...props} />;
+    case 'house':
+      return <House {...props} />;
+    case 'medical':
+      return <Stethoscope {...props} />;
+    case 'pill':
+      return <Pill {...props} />;
   }
 }

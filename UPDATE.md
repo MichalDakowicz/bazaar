@@ -2,6 +2,11 @@
 
 ## 0.2.0 — Unreleased
 
+### Added
+
+- Catalog: gym equipment, clothing, home and kitchen, medicine and supplements
+- Catalog: 24 more named bakery items, including Bułka paryska, ready to add directly
+
 ### Fixed
 
 - Add and Web: add your exact typed item even when similar catalog results appear

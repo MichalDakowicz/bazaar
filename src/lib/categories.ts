@@ -12,7 +12,12 @@ export type CategoryGlyphKey =
   | 'bottle'
   | 'cookie'
   | 'spray'
-  | 'box';
+  | 'box'
+  | 'dumbbell'
+  | 'shirt'
+  | 'house'
+  | 'medical'
+  | 'pill';
 
 export type CategoryMeta = {
   key: CategoryKey;
@@ -33,6 +38,11 @@ export const CATEGORIES: readonly CategoryMeta[] = [
   { key: 'drinks', en: 'Drinks', pl: 'Napoje', glyph: 'bottle' },
   { key: 'snacks', en: 'Sweets', pl: 'Słodycze', glyph: 'cookie' },
   { key: 'home', en: 'Household', pl: 'Chemia', glyph: 'spray' },
+  { key: 'gym', en: 'Gym equipment', pl: 'Sprzęt treningowy', glyph: 'dumbbell' },
+  { key: 'clothing', en: 'Clothing', pl: 'Ubrania', glyph: 'shirt' },
+  { key: 'household', en: 'Home & kitchen', pl: 'Dom i kuchnia', glyph: 'house' },
+  { key: 'medicine', en: 'Medicine', pl: 'Leki', glyph: 'medical' },
+  { key: 'supplements', en: 'Supplements', pl: 'Suplementy', glyph: 'pill' },
   { key: 'other', en: 'Other', pl: 'Inne', glyph: 'box' },
 ];
 

@@ -89,7 +89,6 @@ export const HOME: readonly CatalogEntry[] = [
   ['Cotton buds', 'Patyczki higieniczne'],
   ['Hand sanitiser', 'Płyn do dezynfekcji rąk'],
   ['Wet wipes', 'Chusteczki nawilżane'],
-  ['Plasters', 'Plastry', 'bandaid'],
   ['Sanitary pads', 'Podpaski'],
   ['Tampons', 'Tampony'],
   ['Panty liners', 'Wkładki higieniczne'],

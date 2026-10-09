@@ -4,6 +4,11 @@ import { DRINKS } from './drinks';
 import { FISH } from './fish';
 import { FROZEN } from './frozen';
 import { HOME } from './home';
+import { GYM } from './gym';
+import { CLOTHING } from './clothing';
+import { HOUSEHOLD } from './household';
+import { MEDICINE } from './medicine';
+import { SUPPLEMENTS } from './supplements';
 import { MEAT } from './meat';
 import { PANTRY } from './pantry';
 import { PRODUCE } from './produce';
@@ -46,6 +51,11 @@ const SECTIONS: readonly (readonly [CategoryKey, readonly CatalogEntry[]])[] = [
   ['drinks', DRINKS],
   ['snacks', SNACKS],
   ['home', HOME],
+  ['gym', GYM],
+  ['clothing', CLOTHING],
+  ['household', HOUSEHOLD],
+  ['medicine', MEDICINE],
+  ['supplements', SUPPLEMENTS],
 ];
 
 function build(): Product[] {

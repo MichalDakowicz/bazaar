@@ -1,0 +1,30 @@
+import type { CatalogEntry } from './types';
+
+export const CLOTHING: readonly CatalogEntry[] = [
+  ['T-shirt','Koszulka','tshirt'],
+  ['Top','Top'],
+  ['Shirt','Koszula'],
+  ['Hoodie','Bluza z kapturem'],
+  ['Sweatshirt','Bluza'],
+  ['Jumper','Sweter'],
+  ['Jeans','Jeansy','dzinsy'],
+  ['Joggers','Spodnie dresowe'],
+  ['Leggings','Legginsy'],
+  ['Shorts','Spodenki'],
+  ['Trousers','Spodnie'],
+  ['Jacket','Kurtka'],
+  ['Coat','Płaszcz'],
+  ['Dress','Sukienka'],
+  ['Skirt','Spódnica'],
+  ['Socks','Skarpety','skarpetki'],
+  ['Sports socks','Skarpety sportowe'],
+  ['Underwear','Bielizna'],
+  ['Boxers','Bokserki'],
+  ['Bra','Biustonosz'],
+  ['Sports bra','Biustonosz sportowy'],
+  ['Pyjamas','Piżama'],
+  ['Trainers','Buty sportowe','sneakers'],
+  ['Slippers','Kapcie'],
+  ['Cap','Czapka'],
+];
+
