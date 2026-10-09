@@ -5,6 +5,7 @@
 ### Added
 
 - Catalog: gym equipment, clothing, home and kitchen, medicine and supplements
+- Supplements: 70 choices, including protein variants, amino acids, vitamins and minerals
 - Catalog: 24 more named bakery items, including Bułka paryska, ready to add directly
 
 ### Fixed

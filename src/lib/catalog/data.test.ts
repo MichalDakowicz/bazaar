@@ -49,13 +49,16 @@ const MINIMUM: Record<CategoryKey, number> = {
   clothing: 25,
   household: 25,
   medicine: 20,
-  supplements: 20,
+  supplements: 70,
 };
 
 const REQUIRED = required as Record<CategoryKey, [string, string][]>;
 
 /** Words allowed to carry capitals mid-name: acronyms and proper nouns. */
-const CAPITALS_OK = new Set(['UHT', 'BBQ', 'LED', 'AA', 'AAA', 'WC', 'Grey', 'D3', 'C', 'B12']);
+const CAPITALS_OK = new Set([
+  'UHT', 'BBQ', 'LED', 'AA', 'AAA', 'WC', 'Grey',
+  'D3', 'C', 'B12', 'A', 'E', 'K2', 'B', 'B6', 'Q10', 'BCAA', 'EAA', 'HMB', 'MSM',
+]);
 
 /** Lowercase, strip diacritics (ł has no decomposition, so by hand). */
 function fold(text: string): string {
