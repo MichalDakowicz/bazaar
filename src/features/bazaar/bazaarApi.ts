@@ -37,7 +37,8 @@ const ITEM_COLUMNS =
   'id, list_id, added_by, trip_id, product_id, cat, name_en, name_pl, opt, qty, checked_by, checked_at, created_at';
 const TRIP_COLUMNS = 'id, list_id, shopper_id, store, started_at, ended_at, item_count, skipped_count';
 const ACTIVITY_COLUMNS = 'id, list_id, actor_id, kind, detail, created_at';
-const SETTINGS_COLUMNS = 'app_lang, product_lang, swipe_to_check, notify_adds, notify_shopping, always_home';
+const LEGACY_SETTINGS_COLUMNS = 'app_lang, product_lang, swipe_to_check, notify_adds, notify_shopping, always_home';
+const SETTINGS_COLUMNS = `${LEGACY_SETTINGS_COLUMNS}, general_list, general_list_id`;
 const PERSON_COLUMNS = 'id, username, display_name, pfp';
 
 type PersonRow = { id: string; username: string; display_name: string | null; pfp: string | null };
@@ -156,6 +157,12 @@ export async function fetchSettings(userId: string, locale: string | null): Prom
     .select(SETTINGS_COLUMNS)
     .eq('user_id', userId)
     .maybeSingle();
+  // An older schema still serves language and shopping settings during rollout.
+  if (error?.code === '42703') {
+    const legacy = await supabase.from('bazaar_settings').select(LEGACY_SETTINGS_COLUMNS).eq('user_id', userId).maybeSingle();
+    if (legacy.error) throw legacy.error;
+    return normalizeSettings(legacy.data as SettingsRow | null, locale);
+  }
   if (error) throw error;
   return normalizeSettings(data as SettingsRow | null, locale);
 }

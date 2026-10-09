@@ -10,6 +10,7 @@ import { QrLoginControl } from '@/features/auth/qr/QrLoginControl';
 import { useBazaarSettings, useLang } from '@/features/bazaar/useBazaarSettings';
 import { Avatar } from '@/features/friends/Avatar';
 import { AlwaysHomeEditor } from '@/features/settings/AlwaysHomeEditor';
+import { ListModeControl } from '@/features/settings/ListModeControl';
 import { DataControls } from '@/features/settings/DataControls';
 import { AppUpdateControl } from '@/features/settings/AppUpdateControl';
 import { useSettingsCopy } from '@/features/settings/copy';
@@ -80,14 +81,15 @@ export function SettingsScreen() {
 
           <View className={['gap-1 pt-6', gutter].join(' ')}>
             <Overline>{t.shopH}</Overline>
+            <ListModeControl />
             <SwitchRow label={t.swipeLabel} sub={t.swipeSub} value={settings.swipeToCheck} onChange={(swipeToCheck) => void update({ swipeToCheck })} />
             <SwitchRow label={t.notifyAdds} sub={t.notifyAddsSub} value={settings.notifyAdds} onChange={(notifyAdds) => void update({ notifyAdds })} />
-            <SwitchRow
+            {!settings.generalList && <SwitchRow
               label={t.notifyShopping}
               sub={t.notifyShoppingSub}
               value={settings.notifyShopping}
               onChange={(notifyShopping) => void update({ notifyShopping })}
-            />
+            />}
           </View>
 
           <View className={['pt-6', gutter].join(' ')}>

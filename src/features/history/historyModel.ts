@@ -15,8 +15,9 @@ export function tripTitle(list: BazaarList | null, trip: Trip, lang: Lang): stri
 /**
  * Reusing a trip copies its items back to the list it came from — unless that
  * list is gone or archived, in which case they land on the list you are
- * looking at now. `null` only when you have no list at all.
+ * looking at now. General mode always uses General, including for an old trip.
  */
-export function reuseTarget(own: BazaarList | null, current: BazaarList | null): BazaarList | null {
+export function reuseTarget(own: BazaarList | null, current: BazaarList | null, generalMode = false): BazaarList | null {
+  if (generalMode) return current;
   return own && own.archivedAt === null ? own : current;
 }

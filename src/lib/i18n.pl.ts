@@ -4,6 +4,10 @@ import type { Dictionary } from './i18n.en';
 /** Polski. Plurals have three forms; see pl3. */
 export const pl: Dictionary = {
   lists: 'Listy',
+  generalList: 'Lista ogólna',
+  generalListToggle: 'Jedna lista ogólna',
+  generalListSub: 'Otwieraj listę od razu na ekranie głównym. Wyłącz, aby używać osobnych list.',
+  generalListUnavailable: 'Trzeba przywrócić listę ogólną',
   catalog: 'Katalog',
   history: 'Historia',
   household: 'Domownicy',

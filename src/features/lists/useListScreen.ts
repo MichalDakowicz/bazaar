@@ -8,6 +8,7 @@ import { useBazaarWrites } from '@/features/bazaar/useBazaarWrites';
 import { useLiveTrips } from '@/features/bazaar/useLiveTrips';
 import { useWorkspace } from '@/features/bazaar/useWorkspace';
 import { itemName, viewList } from '@/lib/listModel';
+import { isGeneralList } from '@/lib/currentList';
 import { useBazaarPrefs, useBazaarUi } from '@/store/bazaarPrefs';
 import type { ListItem } from '@/types/bazaar';
 
@@ -29,6 +30,7 @@ export function useListScreen(listId: string | undefined) {
   const setList = useBazaarPrefs((state) => state.setList);
 
   const list = workspace.list(listId);
+  const showShopping = !isGeneralList(settings, listId);
   const items = workspace.itemsOf(listId);
   const view = useMemo(() => viewList(items, productLang), [items, productLang]);
   const trip = listId ? openFor(listId) : null;
@@ -57,6 +59,7 @@ export function useListScreen(listId: string | undefined) {
     error: workspace.error,
     refetch: workspace.refetch,
     swipe: settings.swipeToCheck,
+    showShopping,
     shopper,
     shopperName,
     tripId: trip?.id ?? null,
@@ -64,7 +67,7 @@ export function useListScreen(listId: string | undefined) {
     uncheck,
     more,
     startShopping: async () => {
-      if (list) await writes.startTrip(list.id, list.store);
+      if (list && showShopping) await writes.startTrip(list.id, list.store);
     },
     finishShopping: () => {
       if (list && trip && shopper === 'me') open({ kind: 'finish', listId: list.id, tripId: trip.id });

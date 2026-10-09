@@ -59,6 +59,8 @@ export function useBazaarSettings() {
   return {
     settings,
     loading: query.isLoading,
+    error: query.data ? null : query.error,
+    refetch: query.refetch,
     update: (patch: Partial<BazaarSettings>) => mutation.mutateAsync(patch),
   };
 }

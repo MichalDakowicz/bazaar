@@ -1,6 +1,4 @@
-import { PlannerScreen } from '@/features/planner/PlannerScreen';
-import { ListsScreen } from '@/features/lists/ListsScreen';
-import { useIsDesktop } from '@/hooks/useResponsive';
+import { ListsHome } from '@/features/lists/ListsHome';
 
 /**
  * Lists. On a phone, the lists you have; in a wide browser window, the planner
@@ -8,5 +6,5 @@ import { useIsDesktop } from '@/hooks/useResponsive';
  * gives it ("web is for adding, phone is for shopping").
  */
 export default function ListsTab() {
-  return useIsDesktop() ? <PlannerScreen /> : <ListsScreen />;
+  return <ListsHome />;
 }
