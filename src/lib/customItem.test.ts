@@ -1,6 +1,7 @@
 import { customItem } from './customItem';
 import { newItemToRow, normalizeItem } from './normalize';
 import { viewList } from './listModel';
+import { searchProducts } from './search';
 
 describe('customItem', () => {
   it('writes a typed item to Other and draws it under Inne', () => {
@@ -14,5 +15,12 @@ describe('customItem', () => {
 
   it('rejects blank input', () => {
     expect(customItem(' \n ')).toBeNull();
+  });
+
+  it('keeps the exact typed item when a fuzzy search finds something else', () => {
+    const query = 'figure 8 straps';
+    expect(searchProducts(query, 'pl').some(({ product }) => product.id === 'straws')).toBe(true);
+    expect(customItem(query)).toMatchObject({ productId: null, nameEn: query, namePl: query, cat: 'other' });
+    expect(customItem('x')).toMatchObject({ nameEn: 'x' });
   });
 });

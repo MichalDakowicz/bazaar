@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 
 import { useLang } from '@/features/bazaar/useBazaarSettings';
 import type { Product } from '@/lib/catalog';
+import { customItem } from '@/lib/customItem';
 import { pick, resolveOptions, type OptionValue, type Picked, type ResolvedGroup, type Resolution } from '@/lib/options';
 import { optionSetFor } from '@/lib/optionSets';
 import { searchProducts, type Match } from '@/lib/search';
@@ -29,6 +30,8 @@ export type ProductSearch = {
   tries: string[];
   hasQuery: boolean;
   noResults: boolean;
+  /** Always available for nonblank input, independently of catalogue matches. */
+  custom: NewItem | null;
 };
 
 /**
@@ -87,5 +90,6 @@ export function useProductSearch(initial = ''): ProductSearch {
     tries: TRIES[productLang],
     hasQuery: matches.length > 0 || query.trim().length > 0,
     noResults: query.trim().length >= 2 && matches.length === 0,
+    custom: customItem(query),
   };
 }

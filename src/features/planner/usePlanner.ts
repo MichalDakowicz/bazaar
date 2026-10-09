@@ -11,7 +11,6 @@ import { usePlannerList } from '@/features/planner/usePlannerList';
 import { usePlannerShortcuts } from '@/features/planner/usePlannerShortcuts';
 import { SIDEBAR_WIDTH } from '@/hooks/useResponsive';
 import { categoryAlt, categoryName } from '@/lib/categories';
-import { customItem } from '@/lib/customItem';
 import { optionSetFor } from '@/lib/optionSets';
 import { pick, resolveOptions, type OptionValue, type Picked, type ResolvedGroup } from '@/lib/options';
 import {
@@ -110,6 +109,7 @@ export function usePlanner() {
     focus();
     const ids = await add(item);
     if (ids) setJustIds((current) => [...current, ...ids].slice(-JUST_KEEP));
+    return ids;
   };
 
   const addOpen = () => {
@@ -193,11 +193,12 @@ export function usePlanner() {
     panel,
     more: hidden > 0 ? { label: copy.showMore(Math.min(hidden, PAGE_SIZE)), onPress: () => setShown((current) => current + PAGE_SIZE) } : null,
     nothingFor: search.noResults ? typed : null,
+    customName: search.custom?.nameEn ?? null,
     addTyped: () => {
-      const item = customItem(typed);
-      if (!item) return;
-      void record(item);
-      changeQuery('');
+      if (!search.custom) return;
+      void record(search.custom).then((ids) => {
+        if (ids) changeQuery('');
+      });
     },
 
     showList,

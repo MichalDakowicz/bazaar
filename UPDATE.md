@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- Add and Web: add your exact typed item even when similar catalog results appear
 - Add, Web and Recipe: custom items appear under Other / Inne, including older pantry entries
 
 ## 0.1.0 — 2026-10-03
