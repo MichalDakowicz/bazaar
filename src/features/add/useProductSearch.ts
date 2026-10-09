@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react';
 
 import { useLang } from '@/features/bazaar/useBazaarSettings';
 import type { Product } from '@/lib/catalog';
+import { customItem } from '@/lib/customItem';
 import { pick, resolveOptions, type OptionValue, type Picked, type ResolvedGroup, type Resolution } from '@/lib/options';
 import { optionSetFor } from '@/lib/optionSets';
 import { searchProducts, type Match } from '@/lib/search';
+import { searchSelection } from '@/lib/searchSelection';
 import { suggestFor, TRIES, type Suggestion } from '@/lib/suggestions';
 import { productToItem } from '@/lib/usuals';
 import type { NewItem } from '@/types/bazaar';
@@ -29,6 +31,8 @@ export type ProductSearch = {
   tries: string[];
   hasQuery: boolean;
   noResults: boolean;
+  /** Always available for nonblank input, independently of catalogue matches. */
+  custom: NewItem | null;
 };
 
 /**
@@ -47,10 +51,9 @@ export function useProductSearch(initial = ''): ProductSearch {
   const [manual, setManual] = useState<Record<string, Picked>>({});
 
   const matches = useMemo(() => searchProducts(query, productLang), [query, productLang]);
-  const withOptions = useMemo(() => matches.filter((match) => optionSetFor(match.product.id)), [matches]);
   const selected = useMemo(
-    () => withOptions.find((match) => match.product.id === selId) ?? withOptions[0] ?? null,
-    [withOptions, selId],
+    () => searchSelection(matches, selId),
+    [matches, selId],
   );
   const set = selected ? optionSetFor(selected.product.id) : null;
   const picks = useMemo<Picked>(() => (selected ? (manual[selected.product.id] ?? {}) : {}), [selected, manual]);
@@ -87,5 +90,6 @@ export function useProductSearch(initial = ''): ProductSearch {
     tries: TRIES[productLang],
     hasQuery: matches.length > 0 || query.trim().length > 0,
     noResults: query.trim().length >= 2 && matches.length === 0,
+    custom: customItem(query),
   };
 }

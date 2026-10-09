@@ -1,6 +1,7 @@
 import { type Product } from '@/lib/catalog';
 import type { CategoryKey } from '@/lib/catalog/types';
 import type { Lang } from '@/lib/categories';
+import { customItem } from '@/lib/customItem';
 import { resolveOptions } from '@/lib/options';
 import { optionSetFor } from '@/lib/optionSets';
 import { compareQty, formatQty, parseQty, shopQty, splitLeadingQty, type Qty } from '@/lib/quantity';
@@ -151,16 +152,10 @@ export function planRecipe(text: string, context: PlanContext): RecipePlan {
 
     if (!product) {
       const name = ingredient.text.charAt(0).toUpperCase() + ingredient.text.slice(1);
-      const add: NewItem = {
-        productId: null,
-        cat: 'pantry',
-        nameEn: name,
-        namePl: name,
-        opt: '',
-        qty: ingredient.need ? formatQty(shopQty(ingredient.need)) : '1',
-      };
+      const add = customItem(name, ingredient.need ? formatQty(shopQty(ingredient.need)) : '1');
+      if (!add) return;
       rows.push({
-        id, raw: ingredient.raw, product: null, nameEn: name, namePl: name, cat: 'pantry', action: 'custom', on: true,
+        id, raw: ingredient.raw, product: null, nameEn: name, namePl: name, cat: add.cat, action: 'custom', on: true,
         reason: { kind: 'custom' }, act: add.qty, add, update: null,
       });
       return;

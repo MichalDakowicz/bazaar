@@ -1,0 +1,30 @@
+import type { CatalogEntry } from './types';
+
+export const HOUSEHOLD: readonly CatalogEntry[] = [
+  ['Plates','Talerze'],
+  ['Bowls','Miski'],
+  ['Mugs','Kubki'],
+  ['Drinking glasses','Szklanki'],
+  ['Cutlery','Sztućce'],
+  ['Frying pan','Patelnia'],
+  ['Saucepan','Rondel'],
+  ['Cooking pot','Garnek'],
+  ['Baking tray','Blacha do pieczenia'],
+  ['Cutting board','Deska do krojenia'],
+  ['Kitchen knife','Nóż kuchenny'],
+  ['Spatula','Łopatka kuchenna'],
+  ['Food storage containers','Pojemniki na żywność'],
+  ['Lunchbox','Pudełko śniadaniowe'],
+  ['Water bottle','Bidon'],
+  ['Dish drainer','Suszarka do naczyń'],
+  ['Clothes hangers','Wieszaki na ubrania'],
+  ['Storage boxes','Pudełka do przechowywania'],
+  ['Laundry basket','Kosz na pranie'],
+  ['Bath towel','Ręcznik kąpielowy'],
+  ['Hand towel','Ręcznik do rąk'],
+  ['Bed linen','Pościel'],
+  ['Pillow','Poduszka'],
+  ['Blanket','Koc'],
+  ['Doormat','Wycieraczka'],
+];
+

@@ -124,8 +124,9 @@ describe('applyPlan', () => {
 describe('planRecipe — edge cases', () => {
   it('adds what the catalogue has never heard of, as typed', () => {
     const plan = planRecipe('Dip\n1 szt. kzxqv', { items: [], alwaysHome: [], lang: 'pl' });
-    expect(plan.rows[0]).toMatchObject({ action: 'custom', on: true, product: null });
+    expect(plan.rows[0]).toMatchObject({ action: 'custom', on: true, product: null, cat: 'other' });
     expect(plan.rows[0].add.nameEn).toBe('Kzxqv');
+    expect(applyPlan(plan.rows).adds[0]).toMatchObject({ productId: null, cat: 'other' });
   });
 
   it('does not double up when the list has the product but in a unit it cannot compare', () => {

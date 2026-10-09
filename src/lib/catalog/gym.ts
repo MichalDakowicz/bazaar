@@ -1,0 +1,30 @@
+import type { CatalogEntry } from './types';
+
+export const GYM: readonly CatalogEntry[] = [
+  ['Figure 8 straps','Paski ósemkowe','osemki'],
+  ['Lifting straps','Paski do martwego ciągu'],
+  ['Wrist wraps','Usztywniacze nadgarstków'],
+  ['Lifting belt','Pas do ćwiczeń siłowych'],
+  ['Gym gloves','Rękawiczki treningowe'],
+  ['Resistance bands','Gumy oporowe','powerband'],
+  ['Mini bands','Gumy mini band'],
+  ['Dumbbells','Hantle'],
+  ['Adjustable dumbbells','Hantle regulowane'],
+  ['Kettlebell','Odważnik kettlebell'],
+  ['Barbell','Sztanga'],
+  ['Weight plates','Obciążenia do sztangi'],
+  ['Barbell collars','Zaciski do sztangi'],
+  ['Pull-up bar','Drążek do podciągania'],
+  ['Weight bench','Ławka treningowa'],
+  ['Workout mat','Mata do ćwiczeń'],
+  ['Yoga mat','Mata do jogi'],
+  ['Foam roller','Roller do masażu'],
+  ['Massage ball','Piłka do masażu'],
+  ['Jump rope','Skakanka'],
+  ['Ab wheel','Kółko do ćwiczeń brzucha'],
+  ['Push-up bars','Uchwyty do pompek'],
+  ['Ankle straps','Paski na kostki'],
+  ['Gym bag','Torba sportowa'],
+  ['Shaker bottle','Shaker'],
+];
+

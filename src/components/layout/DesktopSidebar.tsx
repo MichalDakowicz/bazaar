@@ -142,7 +142,7 @@ export function DesktopSidebar() {
           </Text>
         </View>
         <View className="gap-0.5 px-2">
-          {CATEGORIES.map((category) => {
+          {CATEGORIES.filter(({ key }) => (CATEGORY_COUNTS[key] ?? 0) > 0).map((category) => {
             const active = onPlanner && catalogCat === category.key;
             return (
               <Row

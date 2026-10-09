@@ -1,6 +1,19 @@
 # Update notes
 
-## 0.2.0 — Unreleased
+## 0.3.0 — Unreleased
+
+## 0.2.0 — 2026-10-09
+
+### Added
+
+- Catalog: gym equipment, clothing, home and kitchen, medicine and supplements
+- Supplements: 70 choices, including protein variants, amino acids, vitamins and minerals
+- Catalog: 24 more named bakery items, including Bułka paryska, ready to add directly
+
+### Fixed
+
+- Add and Web: add your exact typed item even when similar catalog results appear
+- Add, Web and Recipe: custom items appear under Other / Inne, including older pantry entries
 
 ## 0.1.0 — 2026-10-03
 

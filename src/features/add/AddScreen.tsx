@@ -1,6 +1,6 @@
 import { Check, ChevronRight, Plus } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ScrollView, Text, TextInput, View } from 'react-native';
 
 import { ScreenFrame } from '@/components/layout/ScreenFrame';
 import { ScreenTop } from '@/components/layout/ScreenTop';
@@ -9,6 +9,7 @@ import { GlyphDisc } from '@/components/media/GlyphDisc';
 import { PickChip } from '@/components/ui/PickChip';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { EmptyState } from '@/components/ui/states';
+import { CustomItemAction } from '@/features/add/CustomItemAction';
 import { ProductPanel } from '@/features/add/ProductPanel';
 import { useAdder } from '@/features/add/useAdder';
 import { useProductSearch } from '@/features/add/useProductSearch';
@@ -57,6 +58,17 @@ export function AddScreen() {
               clearLabel={t.back}
             />
           </View>
+          {search.custom && (
+            <CustomItemAction
+              label={`${t.addOwn} “${search.custom.nameEn}”`}
+              onPress={() => {
+                if (!search.custom) return;
+                void add(search.custom).then((ids) => {
+                  if (ids) search.setQuery('');
+                });
+              }}
+            />
+          )}
         </View>
 
         {empty && (
@@ -136,18 +148,6 @@ export function AddScreen() {
         {search.noResults && (
           <View className="items-center gap-2 px-8 py-14">
             <Text className="text-sm font-semibold text-foreground">{`${t.nothing} “${search.query.trim()}”`}</Text>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`${t.addOwn} ${search.query.trim()}`}
-              onPress={() => {
-                const text = search.query.trim();
-                void add({ productId: null, cat: 'pantry', nameEn: text, namePl: text, opt: '', qty: '1' });
-                search.setQuery('');
-              }}
-              className="mt-2 rounded-full bg-secondary px-4 py-2 active:opacity-80"
-            >
-              <Text className="text-sm font-semibold text-foreground">{`${t.addOwn} “${search.query.trim()}”`}</Text>
-            </Pressable>
           </View>
         )}
 

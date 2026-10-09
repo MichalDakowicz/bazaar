@@ -1,8 +1,9 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { ScreenFrame } from '@/components/layout/ScreenFrame';
 import { ScreenTop } from '@/components/layout/ScreenTop';
 import { PickChip } from '@/components/ui/PickChip';
+import { CustomItemAction } from '@/features/add/CustomItemAction';
 import { useLang } from '@/features/bazaar/useBazaarSettings';
 import { OptionPanel } from '@/features/planner/OptionPanel';
 import { PlannerList } from '@/features/planner/PlannerList';
@@ -43,6 +44,9 @@ export function PlannerScreen() {
               onSubmit={planner.submit}
               onRecipe={planner.openRecipe}
             />
+            {planner.customName !== null && (
+              <CustomItemAction label={`${t.addOwn} “${planner.customName}”`} onPress={planner.addTyped} />
+            )}
 
             <View className="mt-6 flex-row items-baseline gap-2.5">
               <Text className="text-2xl font-bold tracking-tight text-foreground" numberOfLines={1}>
@@ -73,14 +77,6 @@ export function PlannerScreen() {
             {planner.nothingFor !== null && (
               <View className="items-center gap-1.5 px-8 py-16">
                 <Text className="text-sm font-semibold text-foreground" numberOfLines={2}>{`${t.nothing} “${planner.nothingFor}”`}</Text>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`${t.addOwn} ${planner.nothingFor}`}
-                  onPress={planner.addTyped}
-                  className="mt-2 rounded-full bg-secondary px-4 py-2 active:opacity-80"
-                >
-                  <Text className="text-sm font-semibold text-foreground" numberOfLines={1}>{`${t.addOwn} “${planner.nothingFor}”`}</Text>
-                </Pressable>
               </View>
             )}
           </View>

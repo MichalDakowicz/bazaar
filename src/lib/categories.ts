@@ -11,7 +11,13 @@ export type CategoryGlyphKey =
   | 'snow'
   | 'bottle'
   | 'cookie'
-  | 'spray';
+  | 'spray'
+  | 'box'
+  | 'dumbbell'
+  | 'shirt'
+  | 'house'
+  | 'medical'
+  | 'pill';
 
 export type CategoryMeta = {
   key: CategoryKey;
@@ -20,7 +26,7 @@ export type CategoryMeta = {
   glyph: CategoryGlyphKey;
 };
 
-/** The ten shop sections, in the order a shop (and so a list) walks them. */
+/** Shop sections and the final section for custom items. */
 export const CATEGORIES: readonly CategoryMeta[] = [
   { key: 'produce', en: 'Produce', pl: 'Warzywa i owoce', glyph: 'apple' },
   { key: 'bakery', en: 'Bakery', pl: 'Pieczywo', glyph: 'bread' },
@@ -32,6 +38,12 @@ export const CATEGORIES: readonly CategoryMeta[] = [
   { key: 'drinks', en: 'Drinks', pl: 'Napoje', glyph: 'bottle' },
   { key: 'snacks', en: 'Sweets', pl: 'Słodycze', glyph: 'cookie' },
   { key: 'home', en: 'Household', pl: 'Chemia', glyph: 'spray' },
+  { key: 'gym', en: 'Gym equipment', pl: 'Sprzęt treningowy', glyph: 'dumbbell' },
+  { key: 'clothing', en: 'Clothing', pl: 'Ubrania', glyph: 'shirt' },
+  { key: 'household', en: 'Home & kitchen', pl: 'Dom i kuchnia', glyph: 'house' },
+  { key: 'medicine', en: 'Medicine', pl: 'Leki', glyph: 'medical' },
+  { key: 'supplements', en: 'Supplements', pl: 'Suplementy', glyph: 'pill' },
+  { key: 'other', en: 'Other', pl: 'Inne', glyph: 'box' },
 ];
 
 const BY_KEY = new Map<string, CategoryMeta>(CATEGORIES.map((category) => [category.key, category]));
@@ -42,9 +54,9 @@ export function isCategory(value: unknown): value is CategoryKey {
   return typeof value === 'string' && BY_KEY.has(value);
 }
 
-/** An unknown section (a row written by a future version) files under pantry rather than vanishing. */
+/** Unknown sections stay visible under Other. */
 export function categoryOf(value: unknown): CategoryMeta {
-  return (isCategory(value) ? BY_KEY.get(value) : BY_KEY.get('pantry')) as CategoryMeta;
+  return (isCategory(value) ? BY_KEY.get(value) : BY_KEY.get('other')) as CategoryMeta;
 }
 
 /** The section's name in the language the user reads products in. */

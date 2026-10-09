@@ -93,7 +93,7 @@ export function usePlanner() {
   const { searching, section, cells } = usePlannerCells({ search, catalogCat, shown, listName: list?.name ?? '', onList });
 
   const openCell = useMemo(() => {
-    if (open === 'auto') return searching ? (cells.find((cell) => cell.hasOptions) ?? null) : null;
+    if (open === 'auto') return searching && cells[0]?.hasOptions ? cells[0] : null;
     return open ? (cells.find((cell) => cell.id === open && cell.hasOptions) ?? null) : null;
   }, [open, searching, cells]);
 
@@ -109,6 +109,7 @@ export function usePlanner() {
     focus();
     const ids = await add(item);
     if (ids) setJustIds((current) => [...current, ...ids].slice(-JUST_KEEP));
+    return ids;
   };
 
   const addOpen = () => {
@@ -192,9 +193,12 @@ export function usePlanner() {
     panel,
     more: hidden > 0 ? { label: copy.showMore(Math.min(hidden, PAGE_SIZE)), onPress: () => setShown((current) => current + PAGE_SIZE) } : null,
     nothingFor: search.noResults ? typed : null,
+    customName: search.custom?.nameEn ?? null,
     addTyped: () => {
-      void record({ productId: null, cat: 'pantry', nameEn: typed, namePl: typed, opt: '', qty: '1' });
-      changeQuery('');
+      if (!search.custom) return;
+      void record(search.custom).then((ids) => {
+        if (ids) changeQuery('');
+      });
     },
 
     showList,
