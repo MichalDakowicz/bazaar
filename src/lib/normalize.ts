@@ -127,6 +127,8 @@ export function defaultSettings(locale?: string | null): BazaarSettings {
     notifyAdds: true,
     notifyShopping: true,
     alwaysHome: [...DEFAULT_ALWAYS_HOME],
+    generalList: false,
+    generalListId: null,
   };
 }
 
@@ -144,6 +146,8 @@ export function normalizeSettings(row: SettingsRow | null, locale?: string | nul
     notifyAdds: row.notify_adds ?? base.notifyAdds,
     notifyShopping: row.notify_shopping ?? base.notifyShopping,
     alwaysHome: Array.isArray(row.always_home) ? row.always_home.filter((id) => typeof id === 'string') : base.alwaysHome,
+    generalList: row.general_list === true,
+    generalListId: row.general_list_id ?? null,
   };
 }
 
@@ -159,6 +163,8 @@ export function settingsToRow(patch: Partial<BazaarSettings>): Record<string, un
   if (patch.notifyAdds !== undefined) row.notify_adds = patch.notifyAdds;
   if (patch.notifyShopping !== undefined) row.notify_shopping = patch.notifyShopping;
   if (patch.alwaysHome !== undefined) row.always_home = patch.alwaysHome;
+  // List mode is changed by bazaar_set_list_mode, together with its target.
+  // An ordinary settings save must never enable it without preparing a list.
   return row;
 }
 

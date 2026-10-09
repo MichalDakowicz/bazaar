@@ -4,6 +4,10 @@ import { MONTHS_EN } from './i18nHelpers';
 export const en = {
   // navigation
   lists: 'Lists',
+  generalList: 'General list',
+  generalListToggle: 'One general list',
+  generalListSub: 'Open your list directly on home. Switch off to use separate lists.',
+  generalListUnavailable: 'Your general list needs to be restored',
   catalog: 'Catalog',
   history: 'History',
   household: 'Household',

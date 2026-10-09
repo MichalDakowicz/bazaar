@@ -42,4 +42,9 @@ describe('reuseTarget', () => {
   it('has nowhere to put them when there is no list at all', () => {
     expect(reuseTarget(null, null)).toBeNull();
   });
+
+  it('reuses an old sublist trip into General while general mode is enabled', () => {
+    expect(reuseTarget(own, current, true)).toBe(current);
+    expect(reuseTarget(own, null, true)).toBeNull();
+  });
 });

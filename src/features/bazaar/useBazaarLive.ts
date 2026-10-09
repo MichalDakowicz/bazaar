@@ -27,7 +27,7 @@ import { useLiveStatus } from '@/store/liveStatus';
  * (see docs/shared-database.md), so a closed app learns on its next open.
  */
 
-type Scope = 'lists' | 'items' | 'trips' | 'activity' | 'history' | 'people';
+type Scope = 'lists' | 'items' | 'trips' | 'activity' | 'history' | 'people' | 'settings';
 
 /** One burst of events becomes one set of reads. */
 const COALESCE_MS = 250;
@@ -40,9 +40,10 @@ const TABLE_SCOPES: Record<string, Scope[]> = {
   bazaar_items: ['items', 'activity', 'history'],
   bazaar_trips: ['trips', 'activity', 'items'],
   bazaar_activity: ['activity'],
+  bazaar_settings: ['settings'],
 };
 
-const ALL_SCOPES: Scope[] = ['lists', 'items', 'trips', 'activity', 'history', 'people'];
+const ALL_SCOPES: Scope[] = ['lists', 'items', 'trips', 'activity', 'history', 'people', 'settings'];
 
 export function useBazaarLive() {
   const { user } = useAuth();
@@ -147,7 +148,9 @@ export function useBazaarLive() {
           );
           if (name) queueAnnouncement(row.added_by, name);
         }
-        if (table === 'bazaar_trips' && current.notifyShopping && typeof row.shopper_id === 'string' && row.shopper_id !== me) {
+        if (table === 'bazaar_trips' && current.notifyShopping &&
+          !(current.generalList && row.list_id === current.generalListId) &&
+          typeof row.shopper_id === 'string' && row.shopper_id !== me) {
           const t = strings(current.appLang);
           speak(t.isShopping(nameOf(row.shopper_id) ?? t.someone));
         }

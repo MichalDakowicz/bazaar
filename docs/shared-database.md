@@ -49,7 +49,7 @@ Seven tables, all namespaced, all with RLS:
 | `bazaar_items` | one thing on a list. `trip_id is null` means it is still live |
 | `bazaar_trips` | one person in a shop with a list. `ended_at is null` means they are there now |
 | `bazaar_activity` | the household feed. Written only by triggers, never by a client |
-| `bazaar_settings` | Bazaar-only preferences: the two languages, swipe, notices, "always at home" |
+| `bazaar_settings` | Bazaar-only preferences: languages, swipe, notices, "always at home", home list mode |
 | `bazaar_hidden_usuals` | the usuals the owner never wants offered again — only the refusal is stored, the usual is derived |
 
 ## Bazaar is shared, but not public
@@ -78,6 +78,21 @@ What gates access instead is a row in `bazaar_list_members`:
   `checked_by` from `auth.uid()` on every write and ignores what the client sent, and the
   feed is filled by triggers. A household feed that says "Marta ticked the milk" has to be
   true.
+
+## Home list mode
+
+`bazaar_settings.general_list` chooses the home screen; `general_list_id` remembers
+its list even while separate-list mode is on. `bazaar_set_list_mode` uses invoker
+permissions and locks only the caller's settings row. Enabling reuses the sole
+active list, or creates one General list when there are zero or several. Repeated
+and simultaneous calls reuse the prepared target. Items, memberships and history
+stay on their original IDs; other lists are never merged or renamed.
+General mode is a persistent checklist without shopping sessions. A trip from
+before the switch stays stored, and separate-list mode restores its controls.
+
+Settings are published through Realtime with their existing owner-only RLS, so
+another device receives the mode change. Run `supabase/list-mode.sql` in the
+Dashboard SQL Editor before shipping this feature (also included in `schema.sql`).
 
 ## Trips
 

@@ -6,6 +6,7 @@ import { SheetDialog } from '@/components/ui/SheetDialog';
 import { useToast } from '@/components/ui/Toast';
 import { useLang } from '@/features/bazaar/useBazaarSettings';
 import { useBazaarWrites } from '@/features/bazaar/useBazaarWrites';
+import { useListMode } from '@/features/bazaar/useListMode';
 import { useWorkspace } from '@/features/bazaar/useWorkspace';
 import { ListActions } from '@/features/sheets/ListActions';
 import { useSheetDraft } from '@/features/sheets/useSheetDraft';
@@ -26,12 +27,14 @@ export function ListSheet({ open, listId, onClose }: { open: boolean; listId: st
   const { t } = useLang();
   const workspace = useWorkspace();
   const writes = useBazaarWrites();
+  const mode = useListMode();
   const { say } = useToast();
   const setList = useBazaarPrefs((state) => state.setList);
   const [clearing, setClearing] = useState(false);
 
   const editing = workspace.list(listId);
   const isOwner = editing ? editing.ownerId === workspace.me : true;
+  const isGeneral = !!editing && mode.settings.generalList && mode.settings.generalListId === editing.id;
 
   const { values, set, confirming, setConfirming } = useSheetDraft(open, listId, {
     name: editing?.name ?? '',
@@ -61,6 +64,7 @@ export function ListSheet({ open, listId, onClose }: { open: boolean; listId: st
 
   const destroy = async () => {
     if (!editing) return;
+    if (isGeneral && !(await mode.change(false))) return;
     const done = isOwner ? await writes.removeList(editing.id) : await writes.leaveList(editing.id);
     if (done) {
       close();
@@ -72,6 +76,7 @@ export function ListSheet({ open, listId, onClose }: { open: boolean; listId: st
 
   const archive = async () => {
     if (!editing) return;
+    if (isGeneral && !(await mode.change(false))) return;
     await writes.archiveList(editing.id, true);
     close();
   };

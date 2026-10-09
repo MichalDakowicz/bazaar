@@ -67,6 +67,8 @@ export type SettingsRow = {
   notify_adds: boolean | null;
   notify_shopping: boolean | null;
   always_home: string[] | null;
+  general_list?: boolean | null;
+  general_list_id?: string | null;
 };
 
 export type BazaarList = {
@@ -137,6 +139,8 @@ export type BazaarSettings = {
   notifyAdds: boolean;
   notifyShopping: boolean;
   alwaysHome: string[];
+  generalList: boolean;
+  generalListId: string | null;
 };
 
 /** What it takes to put something on a list. The database fills in who and when. */

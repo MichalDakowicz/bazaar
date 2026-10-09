@@ -1,11 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useToast } from '@/components/ui/Toast';
-import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { useBazaarSettings, useLang } from '@/features/bazaar/useBazaarSettings';
 import { useBazaarWrites } from '@/features/bazaar/useBazaarWrites';
 import { useWorkspace } from '@/features/bazaar/useWorkspace';
 import type { Product } from '@/lib/catalog';
 import { findOnList } from '@/lib/listModel';
+import { currentList } from '@/lib/currentList';
 import { productName } from '@/lib/search';
 import { useBazaarPrefs } from '@/store/bazaarPrefs';
 import type { NewItem } from '@/types/bazaar';
@@ -14,20 +15,23 @@ import type { NewItem } from '@/types/bazaar';
  * Where things get added, and how: the current list, the write, and the toast
  * that says what happened and takes it back.
  *
- * The list is the one you last stood in front of (`useBazaarPrefs.listId`),
- * falling back to the first you have — "add" never asks which list unless you
- * go and change it, because nine times in ten there is only one that matters
- * this week.
+ * General mode always writes to its prepared account target. Separate-list
+ * mode uses the last selected list (`useBazaarPrefs.listId`), or the first one.
  */
 export function useAdder() {
   const workspace = useWorkspace();
   const writes = useBazaarWrites();
   const { say } = useToast();
   const { t, productLang } = useLang();
+  const { settings } = useBazaarSettings();
   const listId = useBazaarPrefs((state) => state.listId);
   const setList = useBazaarPrefs((state) => state.setList);
 
-  const list = workspace.lists.find((candidate) => candidate.id === listId) ?? workspace.lists[0] ?? null;
+  const target = currentList(workspace.lists, listId, settings);
+  const list = useMemo(
+    () => target && settings.generalList ? { ...target, name: t.generalList } : target,
+    [target, settings.generalList, t.generalList],
+  );
   const items = workspace.itemsOf(list?.id);
 
   const add = useCallback(

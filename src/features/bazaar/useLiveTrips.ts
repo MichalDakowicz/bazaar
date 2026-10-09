@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 
 import { useWorkspace } from '@/features/bazaar/useWorkspace';
+import { useBazaarSettings } from '@/features/bazaar/useBazaarSettings';
+import { shoppingTrips } from '@/lib/currentList';
 import { liveTrips, openTripFor } from '@/lib/feed';
 import type { Trip } from '@/types/bazaar';
 
@@ -14,10 +16,12 @@ import type { Trip } from '@/types/bazaar';
  */
 export function useLiveTrips() {
   const { trips, me } = useWorkspace();
+  const { settings } = useBazaarSettings();
 
   return useMemo(() => {
-    const others = liveTrips(trips, me);
-    const mine = trips.filter((trip) => trip.endedAt === null && trip.shopperId === me);
+    const available = shoppingTrips(trips, settings);
+    const others = liveTrips(available, me);
+    const mine = available.filter((trip) => trip.endedAt === null && trip.shopperId === me);
     const byList = new Map<string, Trip>(others.map((trip) => [trip.listId, trip]));
     return {
       others,
@@ -25,7 +29,7 @@ export function useLiveTrips() {
       byList,
       count: others.length,
       /** The open trip on a list, whoever is on it. */
-      openFor: (listId: string) => openTripFor(trips, listId),
+      openFor: (listId: string) => openTripFor(available, listId),
     };
-  }, [trips, me]);
+  }, [trips, me, settings]);
 }

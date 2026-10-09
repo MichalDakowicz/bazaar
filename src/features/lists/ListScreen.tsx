@@ -19,14 +19,14 @@ import { readError } from '@/lib/utils';
 import { COLORS } from '@/theme/colors';
 
 /**
- * One list on a phone: sections in shop order, then the basket. Pushed out of
- * the tabs, so it mounts the nav itself — and the island's left plate is Back.
+ * Sections in shop order, then the basket. A pushed list mounts its own Back
+ * island; General on home uses the tab shell and its Add island.
  */
-export function ListScreen() {
+export function ListScreen({ listId, pushed = true, title }: { listId?: string; pushed?: boolean; title?: string } = {}) {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t, productLang } = useLang();
   const gutter = useGutter();
-  const screen = useListScreen(id);
+  const screen = useListScreen(listId ?? id);
   const { view, list, check, uncheck, more, swipe } = screen;
 
   const rows = useMemo<CardRow[]>(() => {
@@ -90,7 +90,7 @@ export function ListScreen() {
       <View className="flex-row items-start justify-between gap-3">
         <View className="min-w-0 flex-1">
           <Text className="text-2xl font-bold tracking-tight text-foreground" numberOfLines={1}>
-            {list.name}
+            {title ?? list.name}
           </Text>
           <Text className="mt-0.5 text-xs text-muted-foreground" numberOfLines={1}>
             {[list.store, list.whenText].filter(Boolean).join(' · ')}
@@ -104,18 +104,18 @@ export function ListScreen() {
       <Text className="text-xs text-muted-foreground">
         {view.left} {t.toGet} · {view.done} {t.inBasket}
       </Text>
-      <TripBar
+      {screen.showShopping && <TripBar
         shopper={screen.shopper}
         shopperName={screen.shopperName}
         onStart={screen.startShopping}
         onFinish={screen.finishShopping}
         onWatch={screen.watchLive}
-      />
+      />}
     </View>
   );
 
   return (
-    <ScreenFrame pushed>
+    <ScreenFrame pushed={pushed}>
       <ScreenTop />
       <CardList
         rows={rows}

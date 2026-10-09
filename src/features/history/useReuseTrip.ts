@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import { useToast } from '@/components/ui/Toast';
 import { useAdder } from '@/features/add/useAdder';
-import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { useBazaarSettings, useLang } from '@/features/bazaar/useBazaarSettings';
 import { useBazaarWrites } from '@/features/bazaar/useBazaarWrites';
 import { useWorkspace } from '@/features/bazaar/useWorkspace';
 import { reuseTarget } from '@/features/history/historyModel';
@@ -16,13 +16,14 @@ import type { Trip } from '@/types/bazaar';
 export function useReuseTrip() {
   const { list: listOf } = useWorkspace();
   const { t } = useLang();
+  const { settings } = useBazaarSettings();
   const { list: current } = useAdder();
   const writes = useBazaarWrites();
   const { say } = useToast();
 
   return useCallback(
     async (trip: Trip) => {
-      const target = reuseTarget(listOf(trip.listId), current);
+      const target = reuseTarget(listOf(trip.listId), current, settings.generalList);
       if (!target) {
         say(t.noListToAdd);
         return;
@@ -35,6 +36,6 @@ export function useReuseTrip() {
         ids.length > 0 ? { label: t.undo, onPress: () => void writes.removeItems(ids) } : undefined,
       );
     },
-    [listOf, current, writes, say, t],
+    [listOf, current, settings.generalList, writes, say, t],
   );
 }

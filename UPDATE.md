@@ -1,6 +1,11 @@
 # Update notes
 
-## 0.3.0 — Unreleased
+## 0.3.0 — 2026-10-09
+
+### Added
+
+- Settings: open one General list directly on home or keep separate lists
+- General list: tick items without starting or finishing a shopping trip
 
 ## 0.2.0 — 2026-10-09
 

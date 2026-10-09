@@ -106,6 +106,14 @@ describe('settings', () => {
     expect(settingsToRow({ swipeToCheck: false })).toEqual({ swipe_to_check: false });
     expect(settingsToRow({})).toEqual({});
     expect(settingsToRow({ appLang: 'pl', alwaysHome: [] })).toEqual({ app_lang: 'pl', always_home: [] });
+    expect(settingsToRow({ generalList: true, generalListId: 'l1' })).toEqual({});
+  });
+
+  it('defaults old rows to separate lists and reads an account’s general target', () => {
+    const legacy = { app_lang: 'en', product_lang: 'en', swipe_to_check: true, notify_adds: true, notify_shopping: true, always_home: [] };
+    expect(normalizeSettings(legacy)).toMatchObject({ generalList: false, generalListId: null });
+    expect(normalizeSettings({ ...legacy, general_list: true, general_list_id: 'l1' })).toMatchObject({ generalList: true, generalListId: 'l1' });
+    expect(normalizeSettings({ ...legacy, general_list: null, general_list_id: null })).toMatchObject({ generalList: false, generalListId: null });
   });
 });
 

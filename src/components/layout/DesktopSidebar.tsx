@@ -8,7 +8,7 @@ import { activeTabFor, NAV_DESTINATIONS } from '@/components/layout/navDestinati
 import { CategoryGlyph } from '@/components/media/CategoryGlyph';
 import { Overline } from '@/components/ui/controls';
 import { useAuth } from '@/features/auth/AuthProvider';
-import { useLang } from '@/features/bazaar/useBazaarSettings';
+import { useBazaarSettings, useLang } from '@/features/bazaar/useBazaarSettings';
 import { useLiveTrips } from '@/features/bazaar/useLiveTrips';
 import { useWorkspace } from '@/features/bazaar/useWorkspace';
 import { Avatar } from '@/features/friends/Avatar';
@@ -18,6 +18,7 @@ import { SIDEBAR_WIDTH, useHover, webTransition } from '@/hooks/useResponsive';
 import { CATEGORY_COUNTS } from '@/lib/catalog';
 import { CATEGORIES, categoryAlt, categoryName } from '@/lib/categories';
 import { isChecked } from '@/lib/listModel';
+import { currentList } from '@/lib/currentList';
 import { useBazaarPrefs, useBazaarUi } from '@/store/bazaarPrefs';
 import { COLORS } from '@/theme/colors';
 
@@ -40,6 +41,7 @@ export function DesktopSidebar() {
   const { user } = useAuth();
   const { profile } = useProfile(user?.id);
   const { t, productLang } = useLang();
+  const { settings } = useBazaarSettings();
   const { lists, archived, items } = useWorkspace();
   const [showArchived, setShowArchived] = useState(false);
   const { count: liveCount } = useLiveTrips();
@@ -51,7 +53,8 @@ export function DesktopSidebar() {
 
   const activeTab = activeTabFor(pathname);
   const onPlanner = activeTab === 'index' || activeTab === 'catalog';
-  const current = lists.find((list) => list.id === currentListId) ?? lists[0] ?? null;
+  const current = currentList(lists, currentListId, settings);
+  const visibleLists = settings.generalList ? (current ? [{ ...current, name: t.generalList }] : []) : lists;
   const history = NAV_DESTINATIONS[2];
   const household = NAV_DESTINATIONS[3];
 
@@ -69,7 +72,7 @@ export function DesktopSidebar() {
         </View>
 
         <View className="mt-5 gap-0.5 px-2">
-          {lists.map((list, index) => (
+          {visibleLists.map((list, index) => (
             <Row
               key={list.id}
               label={list.name}
@@ -86,14 +89,14 @@ export function DesktopSidebar() {
               moreLabel={t.moreFor(list.name)}
             />
           ))}
-          <Row
+          {!settings.generalList && <Row
             label={t.newList}
             active={false}
             muted
             icon={<Plus color={COLORS.muted} size={17} />}
             onPress={() => openSheet({ kind: 'newList' })}
-          />
-          {archived.length > 0 && (
+          />}
+          {!settings.generalList && archived.length > 0 && (
             <Row
               label={t.archivedHeading(archived.length)}
               active={false}
@@ -102,7 +105,7 @@ export function DesktopSidebar() {
               onPress={() => setShowArchived((open) => !open)}
             />
           )}
-          {showArchived &&
+          {!settings.generalList && showArchived &&
             archived.map((list) => (
               <Row
                 key={list.id}
