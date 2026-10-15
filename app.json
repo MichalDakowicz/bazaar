@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bazaar",
     "slug": "bazaar",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "bazaar",
@@ -15,7 +15,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.michaldakowicz.bazaar",
-      "versionCode": 4
+      "versionCode": 5
     },
     "web": {
       "output": "single",

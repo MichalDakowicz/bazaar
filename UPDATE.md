@@ -1,6 +1,10 @@
 # Update notes
 
-## 0.4.0 — Unreleased
+## 0.4.1 — Unreleased
+
+### Fixed
+
+- Inputs stay above the Android keyboard on full-screen forms
 
 ## 0.3.0 — 2026-10-09
 
