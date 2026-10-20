@@ -1,6 +1,10 @@
 # Update notes
 
-## 0.4.0 — Unreleased
+## 0.5.0 — Unreleased
+
+### Added
+
+- Sign-in: enter a code from another Ping app without using the camera
 
 ## 0.3.0 — 2026-10-09
 
