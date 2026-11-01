@@ -5,6 +5,7 @@
 ### Changed
 
 - Sign in again to keep your lists and shopping history on Ping's own server
+- Household: add friends in Lidar or Sonar to invite them onto a list
 
 ## 0.5.0 — 2026-10-20
 
