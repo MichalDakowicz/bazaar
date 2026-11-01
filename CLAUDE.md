@@ -5,10 +5,11 @@ NativeWind, Supabase, TanStack Query, Zustand + MMKV. Source lives in `src/`; ro
 `src/app/`. Android is the practical target — the user tests on a physical device over ADB —
 and the web build (Firebase Hosting, `bazaar-cart`) is where lists get **planned**.
 
-**Bazaar and Radar (`../radar`), Lidar (`../lidar`), Sonar (`../sonar`), Pulsar (`../pulsar`)
-and Cellar (`../cellar`) share one Supabase project.** Accounts, profiles, friendships and the
-theme preference are the same rows in all six apps. Read `docs/shared-database.md` before
-touching anything under `supabase/` or any table Radar owns.
+Ping consists of Bazaar, Lidar, Sonar and Pulsar. Radar and Cellar are separate
+products. Bazaar's cutover joins the three migrated apps on Ping's backend while
+preserving account IDs, profiles, friendships and theme. Keep the existing
+Firebase URL. Never restore a full cloud snapshot over populated Ping or replace
+Auth/session rows. Read `docs/shared-database.md` before schema or shared-data work.
 
 Two sides of one product, and the split is the design: **the web plans, the phone shops.** A
 wide browser window shows the *planner* (catalogue grid + search + the open list, with the

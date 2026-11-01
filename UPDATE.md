@@ -2,6 +2,10 @@
 
 ## 0.5.1 — Unreleased
 
+### Changed
+
+- Sign in again to keep your lists and shopping history on Ping's own server
+
 ## 0.5.0 — 2026-10-20
 
 ### Added
