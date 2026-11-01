@@ -73,7 +73,7 @@ export default function Login() {
             {/* Worth saying up front: every Ping app shares one account, and
                 someone who already has one should not create a second. */}
             <Text className="pt-1 text-center text-xs text-muted-foreground/70">
-              Same account as Radar, Lidar, Sonar, Pulsar and Cellar — sign in with it and your profile and
+              Same Ping account as Lidar, Sonar and Pulsar — sign in with it and your profile and
               friends come with you.
             </Text>
           </View>

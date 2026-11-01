@@ -14,10 +14,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Before the client exists: auth-js looks for `crypto` each time it starts a PKCE sign-in.
 installWebCrypto();
 
-// The same project as Radar, Lidar and Sonar — the same account and the same
-// session (docs/shared-database.md). Signing in here signs you in there.
+// A fresh namespace keeps the previous cloud session off Ping's backend.
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
+    storageKey: 'bazaar-self-hosted-auth-v1',
     storage: AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
