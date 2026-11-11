@@ -14,8 +14,7 @@ Radar and Cellar remain excluded.
 Android 0.5.1 is installed in place, and Google sign-in, lists and history were
 confirmed on the handset. Web is deployed at the existing Firebase URL; all 24
 exported files match live bytes. All 456 tests, lint and TypeScript pass, alongside
-live access/RPC, Realtime, QR and same-account handoff checks. Reciprocal sibling
-updates and actual native handoff are being completed. Operational evidence stays
+live access/RPC, Realtime, QR and same-account handoff checks. Operational evidence stays
 private, and the review remains unmerged.
 
 Reciprocal Lidar 1.6.4, Sonar 2.4.3 and Pulsar 1.7.2 are installed and deployed.
