@@ -17,3 +17,7 @@ exported files match live bytes. All 456 tests, lint and TypeScript pass, alongs
 live access/RPC, Realtime, QR and same-account handoff checks. Reciprocal sibling
 updates and actual native handoff are being completed. Operational evidence stays
 private, and the review remains unmerged.
+
+Reciprocal Lidar 1.6.4, Sonar 2.4.3 and Pulsar 1.7.2 are installed and deployed.
+Actual native handoff passed in both directions between Bazaar and each sibling,
+using app-local sign-out only. All four APK/checksum releases are published.
