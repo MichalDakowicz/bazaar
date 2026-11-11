@@ -97,7 +97,7 @@ export const pl: Dictionary = {
   usualHidden: (name) => `${name} · ukryto ze stałych zakupów`,
   showHidden: (n) => `Pokaż ponownie ukryte (${n})`,
   yourData: 'Twoje dane',
-  yourDataNote: 'Usuń to, co Bazaar o Tobie trzyma, kiedy chcesz. Konto zostaje; należy do Radara.',
+  yourDataNote: 'Usuń to, co Bazaar o Tobie trzyma, kiedy chcesz. Twoje konto Ping zostaje.',
   deleteData: 'Usuń wszystkie moje dane w Bazaarze',
   deleteDataTitle: 'Usunąć wszystkie dane w Bazaarze?',
   deleteDataBody:
@@ -157,7 +157,7 @@ export const pl: Dictionary = {
   addPersonTitle: 'Dodaj kogoś do swoich list',
   addPersonBody: 'Tylko znajomi — zobaczą i zmienią wybrane listy.',
   noFriends: 'Nie ma kogo dodać',
-  noFriendsBody: 'Znajomych dodajesz w Radarze. Dodaj kogoś tam, a pojawi się tutaj.',
+  noFriendsBody: 'Dodaj znajomych w Lidarze lub Sonarze, a pojawią się tutaj.',
   members: 'Osoby',
   removeMember: 'Usuń',
   owner: 'Właściciel',

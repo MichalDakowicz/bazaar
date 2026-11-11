@@ -1,5 +1,24 @@
 # The shared database — Bazaar's half of the contract
 
+## Ping backend cutover
+
+Ping consists of Bazaar, Lidar, Sonar and Pulsar. Radar and Cellar remain separate
+cloud products; preserve their historical schema dependencies. Bazaar's cutover
+joins the three migrated apps on Ping. Shared rows no longer replicate from
+cloud, so preserve existing local accounts, identities, sessions and sibling data.
+Never restore a full cloud snapshot over populated Ping.
+
+The client uses a fresh Bazaar auth-storage namespace and requires a new sign-in.
+Only same-backend Ping apps may exchange sign-in; existing certificate, state,
+expiry and one-time-token checks remain. Ping hosts sign-in-handoff and qr-login.
+The Firebase Hosting destination remains bazaar-cart.web.app.
+
+Bazaar's shared preference write stays limited to theme. The common profile hook
+also permits username/display_name updates; it never writes favorites. Preserve
+the existing membership-based RLS, attribution triggers and transactional RPCs.
+
+The pre-cutover schema-ownership description below is historical where it differs.
+
 Bazaar runs on the **same Supabase project** as Radar, Lidar, Sonar, Pulsar and Cellar. Not a
 copy, not a sync — the same rows. One identity, one login, one friend list, one theme
 preference, across all six.

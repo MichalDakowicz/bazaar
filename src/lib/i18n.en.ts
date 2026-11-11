@@ -99,7 +99,7 @@ export const en = {
   usualHidden: (name: string) => `${name} · hidden from your usuals`,
   showHidden: (n: number) => `Show ${n} hidden ${n === 1 ? 'usual' : 'usuals'} again`,
   yourData: 'Your data',
-  yourDataNote: 'Delete what Bazaar holds about you, whenever you like. Your account stays; it belongs to Radar.',
+  yourDataNote: 'Delete what Bazaar holds about you, whenever you like. Your Ping account stays.',
   deleteData: 'Delete all my Bazaar data',
   deleteDataTitle: 'Delete all your Bazaar data?',
   deleteDataBody:
@@ -163,7 +163,7 @@ export const en = {
   addPersonTitle: 'Add someone to your lists',
   addPersonBody: 'Friends only — they can see and change the lists you pick.',
   noFriends: 'No friends to add',
-  noFriendsBody: 'Friends come from Radar. Add one there and they appear here.',
+  noFriendsBody: 'Add friends in Lidar or Sonar, then choose them here.',
   members: 'Members',
   removeMember: 'Remove',
   owner: 'Owner',

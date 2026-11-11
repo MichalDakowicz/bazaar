@@ -1,6 +1,13 @@
 # Update notes
 
-## 0.5.1 — Unreleased
+## 0.5.2 — Unreleased
+
+## 0.5.1 — 2026-11-11
+
+### Changed
+
+- Sign in again to keep your lists and shopping history on Ping's own server
+- Household: add friends in Lidar or Sonar to invite them onto a list
 
 ## 0.5.0 — 2026-10-20
 
