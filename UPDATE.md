@@ -1,6 +1,8 @@
 # Update notes
 
-## 0.5.1 — Unreleased
+## 0.5.2 — Unreleased
+
+## 0.5.1 — 2026-11-11
 
 ### Changed
 

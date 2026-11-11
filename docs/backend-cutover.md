@@ -11,4 +11,9 @@ attribution triggers, trip/list-mode RPCs, Realtime, QR and native sibling sign-
 The other migrated Ping apps need matching reciprocal updates before handoff.
 Radar and Cellar remain excluded.
 
-Operational evidence stays private. Build, handset and web acceptance are pending.
+Android 0.5.1 is installed in place, and Google sign-in, lists and history were
+confirmed on the handset. Web is deployed at the existing Firebase URL; all 24
+exported files match live bytes. All 456 tests, lint and TypeScript pass, alongside
+live access/RPC, Realtime, QR and same-account handoff checks. Reciprocal sibling
+updates and actual native handoff are being completed. Operational evidence stays
+private, and the review remains unmerged.
